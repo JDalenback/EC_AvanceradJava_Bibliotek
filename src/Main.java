@@ -4,7 +4,8 @@ import models.User;
 
 public class Main {
     public static void main(String[] args) {
-        Librarian.addBook();
-        Library.readBookList();
+        Program program = new Program();
+        program.start();
+
     }
 }
