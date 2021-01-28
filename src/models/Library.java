@@ -54,7 +54,7 @@ public class Library implements Serializable {
     }
 
 
-    public static void serializeObject(Object library, String fileName) throws FileNotFoundException, IOException {
+    public static void serializeObject(Object library, String fileName){
         try{
             FileOutputStream fileOutStream = new FileOutputStream(fileName);
             ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream);

@@ -10,7 +10,7 @@ public class Main {
         p.start();
 
         Library library = new Library();
-        //Library.serializeObject(library, "src/models/books.ser");
+        Library.serializeObject(library, "src/models/books.ser");
 
         try{
             Library.readBookFromFile();
