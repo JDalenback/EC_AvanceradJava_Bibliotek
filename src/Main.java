@@ -2,10 +2,12 @@ import models.Librarian;
 import models.Library;
 import models.User;
 
-public class Main {
-    public static void main(String[] args) {
-        Program program = new Program();
-        program.start();
+import java.io.IOException;
 
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Program p = new Program();
+        p.start();
+        Librarian.readFile();
     }
 }

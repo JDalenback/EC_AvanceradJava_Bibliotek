@@ -1,6 +1,8 @@
 import models.Book;
 import models.BookTracker;
+import models.Library;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class Program {
@@ -9,7 +11,17 @@ public class Program {
         HashMap<String, Book> listOfAllBooks = new HashMap<>();
         readInBooks(listOfAllBooks);
 
-
+        // Print out all data in HashMap, removed when save/read file is implemented. Staffan
+        listOfAllBooks.entrySet().forEach(entry -> {
+            System.out.println("SOUT---" + entry.getValue());
+        });
+        listOfAllBooks.entrySet().forEach(entry ->{
+            try {
+                Library.addBookFromHashMap(entry.getValue());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     // To be removed when save/read file is implemented.
@@ -37,10 +49,9 @@ public class Program {
         hashMap.put("9789174297126", book3);
         hashMap.put("9789174293418", book4);
         hashMap.put("9789173893091", book5);
-     /*   // Print out all data in HashMap, removed when save/read file is implemented. Staffan
-        listOfAllBooks.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        });*/
+
+
+
 
     }
 }
