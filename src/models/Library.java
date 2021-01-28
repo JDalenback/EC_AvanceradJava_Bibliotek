@@ -1,9 +1,7 @@
 package models;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -12,7 +10,7 @@ import java.util.Scanner;
  lägga till böcker
  ta bort böcker
  */
-public class Library {
+public class Library implements Serializable {
 
     /*
     // Reads the book from txtfile and then outputs it
@@ -29,11 +27,11 @@ public class Library {
             e.printStackTrace();
         }
     }
-
      */
-
     // Asks user for bookName, bookAuthor, bookGenre, bookIsbn and then add to txtFile
-    public static void addBookManually() throws IOException {
+    public void addBookToHashMap(HashMap<String, Book> hashMap) {
+        BookTracker bookTracker = new BookTracker();
+
         System.out.println("Which book do you want to add?");
         Scanner bookInput = new Scanner(System.in);
         String bookName = bookInput.nextLine();
@@ -42,31 +40,35 @@ public class Library {
         Scanner authorInput = new Scanner(System.in);
         String bookAuthor = authorInput.nextLine();
 
-        System.out.println("Which genre does that book have?");
+        System.out.println("Which description does that book have?");
         Scanner genreInput = new Scanner(System.in);
-        String bookGenre = genreInput.nextLine();
+        String bookDescription = genreInput.nextLine();
 
         System.out.println("Which ISBN does that book have?");
         Scanner IsbnInput = new Scanner(System.in);
         String bookIsbn = IsbnInput.nextLine();
         System.out.println("----------------------------");
 
-        String formattedBookInfo = String.format("%s, %s, %s, %s",
-                bookName,
-                bookAuthor,
-                bookGenre,
-                bookIsbn);
-
-
-
-        ObjectOutputStream objectOutStream = new ObjectOutputStream(new FileOutputStream("src/models/books.bin"));
-        objectOutStream.writeObject(formattedBookInfo);
-
+        Book book1 = new Book(bookName, bookAuthor, bookIsbn, bookDescription, bookTracker);
+        hashMap.put(bookIsbn, book1);
     }
 
-    public static void addBookFromHashMap(Book value) throws IOException {
-        ObjectOutputStream objectStreamOut = new ObjectOutputStream(new FileOutputStream("src/models/books.bin", true));
-        objectStreamOut.writeObject(value);
-        objectStreamOut.close();
+
+    public static void serializeObject(Object library, String fileName) throws FileNotFoundException, IOException {
+        try{
+            FileOutputStream fileOutStream = new FileOutputStream(fileName);
+            ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream);
+            objectOutStream.writeObject(library);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readBookFromFile() throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"));
+
+        Library library = (Library) objectInput.readObject();
+        System.out.println(library);
+
     }
 }

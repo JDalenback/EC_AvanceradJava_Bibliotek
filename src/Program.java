@@ -10,20 +10,15 @@ public class Program {
     public void start() {
         HashMap<String, Book> listOfAllBooks = new HashMap<>();
         readInBooks(listOfAllBooks);
-
+        /*
         // Print out all data in HashMap, removed when save/read file is implemented. Staffan
         listOfAllBooks.entrySet().forEach(entry -> {
             System.out.println("SOUT---" + entry.getValue());
         });
-        listOfAllBooks.entrySet().forEach(entry ->{
-            try {
-                Library.addBookFromHashMap(entry.getValue());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
+         */
+
+    }
     // To be removed when save/read file is implemented.
     public void readInBooks(HashMap<String, Book> hashMap) {
         BookTracker bookTracker = new BookTracker();
@@ -43,15 +38,10 @@ public class Program {
         Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
                 " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.", bookTracker);
 
-
         hashMap.put("9789175036434", book1);
         hashMap.put("9789113089461", book2);
         hashMap.put("9789174297126", book3);
         hashMap.put("9789174293418", book4);
         hashMap.put("9789173893091", book5);
-
-
-
-
     }
 }
