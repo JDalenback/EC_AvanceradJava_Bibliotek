@@ -2,13 +2,13 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Library {
     private List<Book> booksInLibrary = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
 
     public Library() {
@@ -23,17 +23,19 @@ public class Library {
         booksInLibrary.forEach(System.out::println);
     }
 
-    public void searchForBook(String searchParameter) {
-        Optional<Book> searchResult = booksInLibrary
+    public void searchForBook(String searchParameter){
+        List<Book> searchResult = booksInLibrary
                 .stream()
-                .filter(book -> book.getTitle()
-                        .equals(searchParameter) ||
-                        book.getAuthor().equals(searchParameter) ||
-                        book.getIsbn().equals(searchParameter))
-                .findAny();
+                .filter(book -> book.getTitle().contains(searchParameter) ||
+                        book.getAuthor().contains(searchParameter) ||
+                        book.getIsbn().contains(searchParameter))
+                .collect(Collectors.toList());
 
-        if (searchResult.isPresent())
-            System.out.println(searchResult.get());
+
+        if(searchResult.size() > 0){
+            System.out.println("Books found:");
+            searchResult.forEach(System.out::println);
+        }
         else
             System.out.println("Can't find that book in the library.");
     }

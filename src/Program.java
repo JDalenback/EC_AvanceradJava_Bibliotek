@@ -10,7 +10,8 @@ public class Program {
         library.showAllBooksInLibrary();
         library.removeBookFromLibrary();
         System.out.println();
-        library.searchForBook("9789173893091");
+
+       library.searchForBook("ur");
     }
 
 
