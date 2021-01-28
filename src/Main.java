@@ -17,7 +17,5 @@ public class Main {
         models.Book b1 = new Book("Lisa", "Liza", "123", "blabla", trackMe);
         models.Book b2 = new Book("LIZA", "Liza", "124", "blabla", trackMe);
 
-
-
     }
 }
