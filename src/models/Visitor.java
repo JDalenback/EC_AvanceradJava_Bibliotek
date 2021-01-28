@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Scanner;
+
 public class Visitor extends User {
 
 

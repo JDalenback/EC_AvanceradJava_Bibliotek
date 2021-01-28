@@ -1,58 +1,117 @@
 package models;
 
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Library {
     private List<Book> booksInLibrary = new ArrayList<>();
+    private List<Librarian> listOfLibrarians = new ArrayList<>();
+    private List<Visitor> listOfVisitors = new ArrayList<>();
 
 
     public Library() {
         readInBooks();
-    }
 
-
-    public void showAllBooksInLibrary(){
-        System.out.println("All books in the library:");
-        booksInLibrary.forEach(System.out::println);
     }
 
     public void searchForBook(String searchParameter){
-        Optional<Book> searchResult = booksInLibrary
+        List<Book> searchResult = booksInLibrary
                 .stream()
-                .filter(book -> book.getTitle()
-                        .equals(searchParameter) ||
-                        book.getAuthor().equals(searchParameter) ||
-                        book.getIsbn().equals(searchParameter))
-                .findAny();
+                .filter(book -> book.getTitle().contains(searchParameter) ||
+                        book.getAuthor().contains(searchParameter) ||
+                        book.getIsbn().contains(searchParameter))
+                .collect(Collectors.toList());
 
-        if(searchResult.isPresent())
-            System.out.println(searchResult.get());
+
+        if(searchResult.size() > 0){
+            System.out.println("Books found:");
+            searchResult.forEach(System.out::println);
+        }
         else
             System.out.println("Can't find that book in the library.");
     }
 
+    private int indexOfBookName( String find) {
+        return IntStream.range(0, booksInLibrary.size())
+                .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
+                .findFirst().orElse(-1);
+    }
+
+    // to be changed to title when search function is added
+    public void removeBookFromLibrary() {
+        Scanner scanner = new Scanner(System.in);
+        String title;
+        System.out.println("\nRemove book.");
+        System.out.print("Title: ");
+        title = scanner.nextLine();
+        int indexNo = indexOfBookName(title);
+        if (indexNo >0){
+            booksInLibrary.remove(indexNo);
+            System.out.printf("Book %s has been removed from list.\n\n", title);
+        }else {
+            System.out.printf("Book %s can't be found in the library!\n\n", title);
+        }
 
 
+    }
 
+    public void addNewBookToLibrary() {
+        BookTracker bookTracker = new BookTracker();
+        String bookTitle;
+        String author;
+        String isbn;
+        String description;
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("\nAdd new book.");
+        System.out.print("Title: ");
+        bookTitle = scanner.nextLine();
+        System.out.print("Autor: ");
+        author = scanner.nextLine();
+        System.out.print("ISBN: ");
+        isbn = scanner.nextLine();
+        System.out.print("Description: ");
+        description = scanner.nextLine();
 
+        Book newBook = new Book(bookTitle, author, isbn, description, bookTracker);
+        booksInLibrary.add(newBook);
+        System.out.printf("Book %S added to list.\n\n", bookTitle);
 
+    }
+//create new visitor and put it in list of users
+    public void createVisitor() {
+        String name;
+        String userID;
+        Scanner scan = new Scanner(System.in);
 
+            System.out.print("-Create a visitor-\n\nName: ");
+            name = scan.nextLine();
+            System.out.print("UserID: ");
+            userID = scan.nextLine();
 
+            Visitor newVisitor = new Visitor(name, userID);
+            listOfVisitors.add(newVisitor);
+            System.out.println("\n" + name + " is now added to the system \n");
+    }
 
+    //create new librarian and put it in list of users
+    public void createLibrarian() {
+        String name;
+        String adminID;
+        Scanner scan = new Scanner(System.in);
 
+        System.out.print("-Create a Librarian-\n\nName: ");
+        name = scan.nextLine();
+        System.out.print("UserID: ");
+        adminID = scan.nextLine();
 
-
-
-
-
-
-
-
+        Librarian newLibrarian = new Librarian(name, adminID);
+        listOfLibrarians.add(newLibrarian);
+        System.out.println("\n" + name + ", is a new Librarian \n");
+    }
 
 
     // To be removed when save/read file is implemented.
@@ -80,5 +139,30 @@ public class Library {
         booksInLibrary.add(book3);
         booksInLibrary.add(book4);
         booksInLibrary.add(book5);
+
     }
+
+
+    public List<Librarian> getListOfLibrarians() {
+        return listOfLibrarians;
+    }
+
+    public void setListOfLibrarians(List<Librarian> listOfLibrarians) {
+        this.listOfLibrarians = listOfLibrarians;
+    }
+
+    public List<Visitor> getListOfVisitors() {
+        return listOfVisitors;
+    }
+
+    public void setListOfVisitors(List<Visitor> listOfVisitors) {
+        this.listOfVisitors = listOfVisitors;
+    }
+
+    public void showAllBooksInLibrary() {
+        System.out.println("All books in the library:");
+        booksInLibrary.forEach(System.out::println);
+    }
+
+
 }
