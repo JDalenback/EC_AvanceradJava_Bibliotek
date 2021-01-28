@@ -1,29 +1,64 @@
 package models;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Library {
-    HashMap<String, Book> listOfAllBooks = new HashMap<>();
-    public void library() {
+    private List<Book> booksInLibrary = new ArrayList<>();
+
+
+    public Library() {
         readInBooks();
-        addNewBookToLibrary();
-        printout();
-        removeBookFromLibrary();
-        printout();
+
+
+    }
+
+
+    public void showAllBooksInLibrary() {
+        System.out.println("All books in the library:");
+        booksInLibrary.forEach(System.out::println);
+    }
+
+    public void searchForBook(String searchParameter) {
+        Optional<Book> searchResult = booksInLibrary
+                .stream()
+                .filter(book -> book.getTitle()
+                        .equals(searchParameter) ||
+                        book.getAuthor().equals(searchParameter) ||
+                        book.getIsbn().equals(searchParameter))
+                .findAny();
+
+        if (searchResult.isPresent())
+            System.out.println(searchResult.get());
+        else
+            System.out.println("Can't find that book in the library.");
+    }
+
+    private int indexOfBookName( String find) {
+        return IntStream.range(0, booksInLibrary.size())
+                .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
+                .findFirst().orElse(-1);
     }
 
     // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
-        String isbn;
         String title;
         System.out.println("\nRemove book.");
-        System.out.print("ISBN: ");
-        isbn = scanner.nextLine();
-        title=listOfAllBooks.get(isbn).getBookTitle();
-        listOfAllBooks.remove(isbn);
-        System.out.printf("Book %s has been removed from list.\n",title);
+        System.out.print("Title: ");
+        title = scanner.nextLine();
+        int indexNo = indexOfBookName(title);
+        if (indexNo >0){
+            booksInLibrary.remove(indexNo);
+            System.out.printf("Book %s has been removed from list.\n\n", title);
+        }else {
+            System.out.printf("Book %s can't be found in the library!\n\n", title);
+        }
+
 
     }
 
@@ -35,7 +70,7 @@ public class Library {
         String description;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\nAdd new book.\n");
+        System.out.println("\nAdd new book.");
         System.out.print("Title: ");
         bookTitle = scanner.nextLine();
         System.out.print("Autor: ");
@@ -46,10 +81,11 @@ public class Library {
         description = scanner.nextLine();
 
         Book newBook = new Book(bookTitle, author, isbn, description, bookTracker);
-        listOfAllBooks.put(isbn, newBook);
-        System.out.printf("Book %S added to list.\n",bookTitle);
+        booksInLibrary.add(newBook);
+        System.out.printf("Book %S added to list.\n\n", bookTitle);
 
     }
+
 
     // To be removed when save/read file is implemented.
     public void readInBooks() {
@@ -71,17 +107,14 @@ public class Library {
                 " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.", bookTracker);
 
 
-        listOfAllBooks.put("9789175036434", book1);
-        listOfAllBooks.put("9789113089461", book2);
-        listOfAllBooks.put("9789174297126", book3);
-        listOfAllBooks.put("9789174293418", book4);
-        listOfAllBooks.put("9789173893091", book5);
+        booksInLibrary.add(book1);
+        booksInLibrary.add(book2);
+        booksInLibrary.add(book3);
+        booksInLibrary.add(book4);
+        booksInLibrary.add(book5);
 
-        }
-
-    public void printout() {
-        listOfAllBooks.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        });
     }
+
 }
+
+
