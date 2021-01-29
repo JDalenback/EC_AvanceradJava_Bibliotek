@@ -4,16 +4,28 @@ import models.Library;
 import java.io.IOException;
 
 public class Program {
+    private Library library = null;
 
-    public void start() throws IOException, ClassNotFoundException {
+    public void start() {
 
-        Library library = new Library();
+
+
+        setLibrary(Library.deSerializeObject());
+        library.readInBooks();
+
         library.showAllBooksInLibrary();
         library.addNewBookToLibrary();
-        library.showAllBooksInLibrary();
-        library.removeBookFromLibrary();
-        System.out.println();
+        Library.serializeObject(library, "src/models/books.ser");
 
-       library.searchForBook("ur");
+
+        //library.searchForBook("ur");
+    }
+    public void setLibrary(Library object) {
+        if(object != null){
+            this.library = (Library) object;
+        }
+        else{
+            this.library = new Library();
+        }
     }
 }

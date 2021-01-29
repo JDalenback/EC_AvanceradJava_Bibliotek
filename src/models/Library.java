@@ -10,10 +10,10 @@ import java.util.stream.IntStream;
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
-    private Library library = null;
 
 
-    public Library() throws IOException, ClassNotFoundException {
+
+    public Library(){
         //readInBooks();
     }
 
@@ -82,12 +82,11 @@ public class Library implements Serializable {
         Book newBook = new Book(bookTitle, author, isbn, description, bookTracker);
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
-        serializeObject(booksInLibrary, "src/models/books.ser");
 
     }
 
     // To be removed when save/read file is implemented.
-    /*
+
     public void readInBooks() {
         BookTracker bookTracker = new BookTracker();
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
@@ -115,33 +114,27 @@ public class Library implements Serializable {
 
     }
 
-     */
+
     public static void serializeObject(Object library, String fileName){
-        try{
-            FileOutputStream fileOutStream = new FileOutputStream(fileName);
-            ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream);
+        try(FileOutputStream fileOutStream = new FileOutputStream(fileName);ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)){
             objectOutStream.writeObject(library);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void readBookFromFile() throws IOException, ClassNotFoundException {
-        ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"));
-
-        Library library = (Library) objectInput.readObject();
-        System.out.println(library);
+    public static Library deSerializeObject(){
+        Library library = null;
+        try(ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))){
+            library = (Library) objectInput.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return library;
 
     }
 
-    public void setLibrary(Object  object) throws IOException, ClassNotFoundException {
-        if(object != null){
-            this.library = (Library) object;
-        }
-        else{
-            this.library = new Library();
-        }
-    }
+
 
 }
 
