@@ -8,7 +8,6 @@ abstract class User {
     private String userID;
     private HashMap<String, Book> myBookList = new HashMap<>();
 
-
     public User(String name, String userID) {
         this.name = name;
         this.userID = userID;

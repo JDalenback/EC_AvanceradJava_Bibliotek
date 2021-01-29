@@ -2,18 +2,20 @@ package models;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
-    private List<User> users = new ArrayList<>();
+    private List<Librarian> listOfLibrarians = new ArrayList<>();
+    private List<Visitor> listOfVisitors = new ArrayList<>();
 
-
-
-    public Library(){
+    public Library() {
         //readInBooks();
     }
 
@@ -39,9 +41,9 @@ public class Library implements Serializable {
             System.out.println("Can't find that book in the library.");
     }
 
-    private int indexOfBookName( String find) {
+    private int indexOfBookName( String title) {
         return IntStream.range(0, booksInLibrary.size())
-                .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
+                .filter(i -> booksInLibrary.get(i).getTitle().equalsIgnoreCase(title))
                 .findFirst().orElse(-1);
     }
 
@@ -83,6 +85,58 @@ public class Library implements Serializable {
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
+    }
+    public Long setBookReturnTime() {
+        long timeNow = System.currentTimeMillis();
+        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+    }
+
+    public void lendingStatusDate(long lendingPeriodInMs) {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        Date returnDay = new Date(lendingPeriodInMs);
+
+        long timeNow = System.currentTimeMillis();
+
+        if (timeNow > lendingPeriodInMs) {
+            System.out.println("\nYour book is late!\nReturn to the library immediately.");
+        } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
+            System.out.printf("\nYour loan period is almost over.\n" +
+                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+        } else {
+            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+        }
+    }
+
+//create new visitor and put it in list of users
+    public void createVisitor() {
+        String name;
+        String userID;
+        Scanner scan = new Scanner(System.in);
+
+            System.out.print("-Create a visitor-\n\nName: ");
+            name = scan.nextLine();
+            System.out.print("UserID: ");
+            userID = scan.nextLine();
+
+            Visitor newVisitor = new Visitor(name, userID);
+            listOfVisitors.add(newVisitor);
+            System.out.println("\n" + name + " is now added to the system \n");
+    }
+
+    //create new librarian and put it in list of users
+    public void createLibrarian() {
+        String name;
+        String adminID;
+        Scanner scan = new Scanner(System.in);
+
+        System.out.print("-Create a Librarian-\n\nName: ");
+        name = scan.nextLine();
+        System.out.print("UserID: ");
+        adminID = scan.nextLine();
+
+        Librarian newLibrarian = new Librarian(name, adminID);
+        listOfLibrarians.add(newLibrarian);
+        System.out.println("\n" + name + ", is a new Librarian \n");
     }
 
     // To be removed when save/read file is implemented.
@@ -134,8 +188,21 @@ public class Library implements Serializable {
 
     }
 
+    public List<Librarian> getListOfLibrarians() {
+        return listOfLibrarians;
+    }
+
+    public void setListOfLibrarians(List<Librarian> listOfLibrarians) {
+        this.listOfLibrarians = listOfLibrarians;
+    }
+
+    public List<Visitor> getListOfVisitors() {
+        return listOfVisitors;
+    }
+
+    public void setListOfVisitors(List<Visitor> listOfVisitors) {
+        this.listOfVisitors = listOfVisitors;
+    }
 
 
 }
-
-

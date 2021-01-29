@@ -9,7 +9,7 @@ public class Librarian extends User {
 
 
     public Librarian(String name, String userID) {
-        super(name, userID);
+        super(name, userID + "**");
 
     }
 
@@ -33,4 +33,5 @@ public class Librarian extends User {
             e.printStackTrace();
         }
     }
+
 }
