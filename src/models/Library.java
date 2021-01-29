@@ -1,6 +1,9 @@
 package models;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -34,9 +37,9 @@ public class Library {
             System.out.println("Can't find that book in the library.");
     }
 
-    private int indexOfBookName( String find) {
+    private int indexOfBookName( String title) {
         return IntStream.range(0, booksInLibrary.size())
-                .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
+                .filter(i -> booksInLibrary.get(i).getTitle().equalsIgnoreCase(title))
                 .findFirst().orElse(-1);
     }
 
@@ -81,6 +84,27 @@ public class Library {
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
     }
+    public Long setBookReturnTime() {
+        long timeNow = System.currentTimeMillis();
+        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+    }
+
+    public void lendingStatusDate(long lendingPeriodInMs) {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        Date returnDay = new Date(lendingPeriodInMs);
+
+        long timeNow = System.currentTimeMillis();
+
+        if (timeNow > lendingPeriodInMs) {
+            System.out.println("\nYour book is late!\nReturn to the library immediately.");
+        } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
+            System.out.printf("\nYour loan period is almost over.\n" +
+                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+        } else {
+            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+        }
+    }
+
 //create new visitor and put it in list of users
     public void createVisitor() {
         String name;
