@@ -8,8 +8,8 @@ import java.util.stream.IntStream;
 
 public class Library {
     private List<Book> booksInLibrary = new ArrayList<>();
-    private List<Librarian> listOfLibrarians = new ArrayList<>();
-    private List<Visitor> listOfVisitors = new ArrayList<>();
+    private List<User> listOfAllUsers = new ArrayList<>();
+
 
 
     public Library() {
@@ -81,36 +81,30 @@ public class Library {
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
     }
-//create new visitor and put it in list of users
-    public void createVisitor() {
+//create new users and put them in list of allUsers
+
+
+    public void createUser() {
         String name;
         String userID;
+        String admin;
+        boolean adminBoolean = false;
+
         Scanner scan = new Scanner(System.in);
 
-            System.out.print("-Create a visitor-\n\nName: ");
+            System.out.print("---Create a new USER---\n\nName: ");
             name = scan.nextLine();
             System.out.print("UserID: ");
             userID = scan.nextLine();
+            System.out.println("Admin? Enter \"yes\" or \"no\"");
+            admin = scan.nextLine();
 
-            Visitor newVisitor = new Visitor(name, userID);
-            listOfVisitors.add(newVisitor);
+            if(admin.equalsIgnoreCase("yes"))
+                adminBoolean=true;
+
+            User newUser = new User(name, userID, adminBoolean);
+            listOfAllUsers.add(newUser);
             System.out.println("\n" + name + " is now added to the system \n");
-    }
-
-    //create new librarian and put it in list of users
-    public void createLibrarian() {
-        String name;
-        String adminID;
-        Scanner scan = new Scanner(System.in);
-
-        System.out.print("-Create a Librarian-\n\nName: ");
-        name = scan.nextLine();
-        System.out.print("UserID: ");
-        adminID = scan.nextLine();
-
-        Librarian newLibrarian = new Librarian(name, adminID);
-        listOfLibrarians.add(newLibrarian);
-        System.out.println("\n" + name + ", is a new Librarian \n");
     }
 
 
@@ -140,23 +134,6 @@ public class Library {
         booksInLibrary.add(book4);
         booksInLibrary.add(book5);
 
-    }
-
-
-    public List<Librarian> getListOfLibrarians() {
-        return listOfLibrarians;
-    }
-
-    public void setListOfLibrarians(List<Librarian> listOfLibrarians) {
-        this.listOfLibrarians = listOfLibrarians;
-    }
-
-    public List<Visitor> getListOfVisitors() {
-        return listOfVisitors;
-    }
-
-    public void setListOfVisitors(List<Visitor> listOfVisitors) {
-        this.listOfVisitors = listOfVisitors;
     }
 
     public void showAllBooksInLibrary() {
