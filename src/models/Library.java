@@ -113,7 +113,7 @@ public class Library implements Serializable {
         }
 
 //create new visitor and put it in list of users
-        public void createVisitor () {
+        public void createUser () {
             String name;
             String userID;
             String admin;
