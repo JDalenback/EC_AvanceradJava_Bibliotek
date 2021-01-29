@@ -32,9 +32,10 @@ public class User implements Serializable {
         this.userID = userID;
     }
 
-    public boolean isAdmin() {
+    public boolean isAdmin(boolean b) {
         return admin;
     }
+
 
     public void setAdmin(boolean admin) {
         this.admin = admin;

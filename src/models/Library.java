@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
@@ -113,7 +114,7 @@ public class Library implements Serializable {
         }
 
 //create new visitor and put it in list of users
-        public void createVisitor () {
+        public void createUser () {
             String name;
             String userID;
             String admin;
@@ -136,7 +137,17 @@ public class Library implements Serializable {
             System.out.println("\n" + name + " is now added to the system \n");
         }
 
-        // To be removed when save/read file is implemented.
+        public void getAllLenders(){
+            Stream<User> tempTest;
+            tempTest = listOfAllUsers
+                    .stream()
+                    .filter(user -> !user.isAdmin(true));
+
+            tempTest.forEach(user -> System.out.println("-- Name: "+user.getName()+", userID: "+user.getUserID()+", List of books: "+user.getMyBookList()+"\n"));
+
+        }
+
+    // To be removed when save/read file is implemented.
 
         public void readInBooks () {
             BookTracker bookTracker = new BookTracker();
