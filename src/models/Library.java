@@ -186,6 +186,8 @@ public class Library implements Serializable {
 
             }
 
-
-        }
+    public List<User> getListOfAllUsers() {
+        return listOfAllUsers;
+    }
+}
 

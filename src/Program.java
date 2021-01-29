@@ -1,11 +1,10 @@
 
 import models.Library;
-import models.User;
-
-import java.io.IOException;
+import models.Menu;
 
 public class Program {
     private Library library = null;
+    Menu menu = new Menu();
 
     public void start() {
         setLibrary(Library.deSerializeObject());
@@ -19,18 +18,15 @@ public class Program {
         library.showAllBooksInLibrary();
         library.removeBookFromLibrary();
         System.out.println();
-        User u1 = new User("Joans", "345", true);
+       // User u1 = new User("Joans", "345", true);
         library.searchForBook("ur");
+        menu.loggIn();
     }
 
-
-
-
     public void setLibrary(Library object) {
-        if(object != null){
+        if (object != null) {
             this.library = (Library) object;
-        }
-        else{
+        } else {
             this.library = new Library();
         }
     }
