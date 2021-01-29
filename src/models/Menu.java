@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class Menu {
     Library library = new Library();
 
-    public void loggIn() {
+    public void login() {
         Scanner scanner = new Scanner(System.in);
         String userName;
         String password;
@@ -23,7 +23,7 @@ public class Menu {
                 password = scanner.nextLine();
 
                 List<User> matchingUser = getUserThatMatchNameAndPassword
-                        (library.getListOfAllUsers(), userName, password);
+                        (library.geUsers(), userName, password);
 
                 if (matchingUser.size() > 0) {
                     if (checkUserType(matchingUser)) {
