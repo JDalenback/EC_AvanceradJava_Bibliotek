@@ -1,18 +1,20 @@
 package models;
 
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-abstract class User {
+public class User implements Serializable {
 
     private String name;
     private String userID;
-    private HashMap<String, Book> myBookList = new HashMap<>();
+    private boolean admin;
+    private List<Book> myBooks = new ArrayList<>();
 
-
-    public User(String name, String userID) {
+    public User(String name, String userID, boolean admin) {
         this.name = name;
         this.userID = userID;
-
+        this.admin = admin;
     }
 
     public String getName() {
@@ -31,12 +33,24 @@ abstract class User {
         this.userID = userID;
     }
 
-    public HashMap<String, Book> getMyBookList() {
-        return myBookList;
+    public boolean isAdmin() {
+        return admin;
     }
 
-    public void setMyBookList(HashMap<String, Book> myBookList) {
-        this.myBookList = myBookList;
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public List<Book> getMyBooks() {
+        return myBooks;
+    }
+
+    public void addBookToMyBooks(Book book){
+        this.myBooks.add(book);
+    }
+
+    public void removeBookFromMyBooks(Book book){
+        myBooks.remove(book);
     }
 
     @Override
@@ -44,9 +58,8 @@ abstract class User {
         return "User{" +
                 "name='" + name + '\'' +
                 ", userID='" + userID + '\'' +
-                ", myBookList=" + myBookList +
+                ", admin=" + admin +
+                ", myBooks=" + myBooks +
                 '}';
     }
-
-
 }

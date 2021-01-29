@@ -1,9 +1,11 @@
 package models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+
+import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -12,9 +14,7 @@ public class Library implements Serializable {
     private List<User> users = new ArrayList<>();
 
     public Library() {
-        readInBooks();
-
-
+        //readInBooks();
     }
 
     public void showAllBooksInLibrary() {
@@ -22,7 +22,12 @@ public class Library implements Serializable {
         booksInLibrary.forEach(System.out::println);
     }
 
-    public void searchForBook(String searchParameter) {
+    public void showAllUsers() {
+        System.out.println("All library users:");
+        users.forEach(System.out::println);
+    }
+
+    public List<Book> searchForBook(String searchParameter) {
         List<Book> searchResult = booksInLibrary
                 .stream()
                 .filter(book -> book.getTitle().contains(searchParameter) ||
@@ -30,21 +35,51 @@ public class Library implements Serializable {
                         book.getIsbn().contains(searchParameter))
                 .collect(Collectors.toList());
 
-
         if (searchResult.size() > 0) {
             System.out.println("Books found:");
             searchResult.forEach(System.out::println);
         } else
             System.out.println("Can't find that book in the library.");
+
+        return searchResult;
     }
 
-    public void lendBookToUser(User user) {
-
+    public Book getSpecificBook(String searchParameter) {
+        List<Book> books = searchForBook(searchParameter);
+        if (books.size() > 0)
+            return books.get(0);
+        else
+            return null;
     }
 
-    private int indexOfBookName(String find) {
+    public void showStatusOfBooks() {
+        booksInLibrary.forEach(book -> {
+            System.out.println(book);
+            System.out.println(book.getBookTracker());
+            System.out.println();
+        });
+    }
+
+    public void lendBookToUser(User user, Book book) {
+        BookTracker bookTracker = book.getBookTracker();
+        bookTracker.setAvailable(false);
+        bookTracker.setUserThatBorrowed(user);
+        bookTracker.setDateOfReturn(setBookReturnTime());
+        user.addBookToMyBooks(book);
+    }
+
+    public void returnBookFromUser(User user, Book book) {
+        BookTracker bookTracker = book.getBookTracker();
+        bookTracker.setAvailable(true);
+        bookTracker.setUserThatBorrowed(null);
+        bookTracker.setDateOfReturn(0);
+        user.removeBookFromMyBooks(book);
+    }
+
+
+    private int indexOfBookName(String title) {
         return IntStream.range(0, booksInLibrary.size())
-                .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
+                .filter(i -> booksInLibrary.get(i).getTitle().equalsIgnoreCase(title))
                 .findFirst().orElse(-1);
     }
 
@@ -62,8 +97,6 @@ public class Library implements Serializable {
         } else {
             System.out.printf("Book %s can't be found in the library!\n\n", title);
         }
-
-
     }
 
     public void addNewBookToLibrary() {
@@ -84,31 +117,119 @@ public class Library implements Serializable {
         System.out.print("Description: ");
         description = scanner.nextLine();
 
-        Book newBook = new Book(bookTitle, author, isbn, description, bookTracker);
+        Book newBook = new Book(bookTitle, author, isbn, description);
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
     }
 
+//create new users and put them in list of allUsers
+
+
+    public Long setBookReturnTime() {
+        long timeNow = System.currentTimeMillis();
+        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+    }
+
+    public void lendingStatusDate(long lendingPeriodInMs) {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        Date returnDay = new Date(lendingPeriodInMs);
+
+        long timeNow = System.currentTimeMillis();
+
+        if (timeNow > lendingPeriodInMs) {
+            System.out.println("\nYour book is late!\nReturn to the library immediately.");
+        } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
+            System.out.printf("\nYour loan period is almost over.\n" +
+                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+        } else {
+            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+        }
+    }
+
+    //create new visitor and put it in list of users
+    public void addUser() {
+        String name;
+        String userID;
+        String admin;
+        boolean adminBoolean = false;
+
+        Scanner scan = new Scanner(System.in);
+
+        System.out.print("---Create a new USER---\n\nName: ");
+        name = scan.nextLine();
+        System.out.print("UserID: ");
+        userID = scan.nextLine();
+        System.out.println("Admin? Enter \"yes\" or \"no\"");
+        admin = scan.nextLine();
+
+        if (admin.equalsIgnoreCase("yes"))
+            adminBoolean = true;
+
+        User newUser = new User(name, userID, adminBoolean);
+        users.add(newUser);
+        System.out.println("\n" + name + " is now added to the system \n");
+    }
+
+    public User getSpecificUser(String userID) {
+        Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
+        if (user.isPresent())
+            return user.get();
+        else
+            return null;
+    }
 
     // To be removed when save/read file is implemented.
-    public void readInBooks() {
-        BookTracker bookTracker = new BookTracker();
+
+    public static void serializeObject(Object library, String fileName) {
+        try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
+            objectOutStream.writeObject(library);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Library deSerializeObject() {
+        Library library = null;
+        try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
+            library = (Library) objectInput.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return library;
+
+    }
+
+
+    public void populateMockupLibrary() {
+        readInBooks();
+        users.add(new User("John Doe", "12345", false));
+        users.add(new User("Molly", "23456", true));
+        users.add(new User("Andy", "34567", true));
+        users.add(new User("Misty", "45678", false));
+
+        User user = getSpecificUser("12345");
+        Book book = getSpecificBook("Vita tänder");
+        lendBookToUser(user, book);
+    }
+
+
+    private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
                 "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
-                "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.", bookTracker);
+                "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.");
         Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
                 "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
                 " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
-                "kärlek, sex och känslomässigt beroende.", bookTracker);
+                "kärlek, sex och känslomässigt beroende.");
         Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
                 "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
-                "egna minnen.", bookTracker);
+                "egna minnen.");
         Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
                 " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
-                "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.", bookTracker);
+                "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.");
         Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
-                " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.", bookTracker);
+                " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.");
 
 
         booksInLibrary.add(book1);
@@ -118,7 +239,5 @@ public class Library implements Serializable {
         booksInLibrary.add(book5);
 
     }
-
 }
-
 

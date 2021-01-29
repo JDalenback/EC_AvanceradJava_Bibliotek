@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class BookTracker implements Serializable {
     private boolean isAvailable;
-    private int dateOfBorrow;
-    private String userThatBorrowed;
+    private long dateOfReturn;
+    private User userThatBorrowed;
 
     public BookTracker() {
         this.isAvailable = true;
-        this.dateOfBorrow = 0;
+        this.dateOfReturn = 0;
         this.userThatBorrowed = null;
     }
 
@@ -21,19 +21,19 @@ public class BookTracker implements Serializable {
         isAvailable = available;
     }
 
-    public int getDateOfBorrow() {
-        return dateOfBorrow;
+    public long getDateOfReturn() {
+        return dateOfReturn;
     }
 
-    public void setDateOfBorrow(int dateOfBorrow) {
-        this.dateOfBorrow = dateOfBorrow;
+    public void setDateOfReturn(long dateOfReturn) {
+        this.dateOfReturn = dateOfReturn;
     }
 
-    public String getUserThatBorrowed() {
+    public User getUserThatBorrowed() {
         return userThatBorrowed;
     }
 
-    public void setUserThatBorrowed(String userThatBorrowed) {
+    public void setUserThatBorrowed(User userThatBorrowed) {
         this.userThatBorrowed = userThatBorrowed;
     }
 
@@ -41,7 +41,7 @@ public class BookTracker implements Serializable {
     public String toString() {
         return "BookTracker{" +
                 "isAvailable=" + isAvailable +
-                ", dateOfBorrow=" + dateOfBorrow +
+                ", dateOfBorrow=" + dateOfReturn +
                 ", userThatBorrowed='" + userThatBorrowed + '\'' +
                 '}';
     }
