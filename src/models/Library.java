@@ -1,15 +1,15 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Library {
+public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
-
 
     public Library() {
         readInBooks();
@@ -17,13 +17,12 @@ public class Library {
 
     }
 
-
     public void showAllBooksInLibrary() {
         System.out.println("All books in the library:");
         booksInLibrary.forEach(System.out::println);
     }
 
-    public void searchForBook(String searchParameter){
+    public void searchForBook(String searchParameter) {
         List<Book> searchResult = booksInLibrary
                 .stream()
                 .filter(book -> book.getTitle().contains(searchParameter) ||
@@ -32,15 +31,18 @@ public class Library {
                 .collect(Collectors.toList());
 
 
-        if(searchResult.size() > 0){
+        if (searchResult.size() > 0) {
             System.out.println("Books found:");
             searchResult.forEach(System.out::println);
-        }
-        else
+        } else
             System.out.println("Can't find that book in the library.");
     }
 
-    private int indexOfBookName( String find) {
+    public void lendBookToUser(User user) {
+
+    }
+
+    private int indexOfBookName(String find) {
         return IntStream.range(0, booksInLibrary.size())
                 .filter(i -> booksInLibrary.get(i).getTitle().equals(find))
                 .findFirst().orElse(-1);
@@ -54,10 +56,10 @@ public class Library {
         System.out.print("Title: ");
         title = scanner.nextLine();
         int indexNo = indexOfBookName(title);
-        if (indexNo >0){
+        if (indexNo > 0) {
             booksInLibrary.remove(indexNo);
             System.out.printf("Book %s has been removed from list.\n\n", title);
-        }else {
+        } else {
             System.out.printf("Book %s can't be found in the library!\n\n", title);
         }
 
@@ -65,12 +67,12 @@ public class Library {
     }
 
     public void addNewBookToLibrary() {
+        Scanner scanner = new Scanner(System.in);
         BookTracker bookTracker = new BookTracker();
         String bookTitle;
         String author;
         String isbn;
         String description;
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("\nAdd new book.");
         System.out.print("Title: ");

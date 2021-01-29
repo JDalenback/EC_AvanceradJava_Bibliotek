@@ -1,18 +1,30 @@
+import Utils.LibraryFileUtils;
 import models.Library;
 
 public class Program {
+    Library library = null;
 
     public void start() {
 
-        Library library = new Library();
-        library.showAllBooksInLibrary();
-        library.addNewBookToLibrary();
-        library.showAllBooksInLibrary();
-        library.removeBookFromLibrary();
-        System.out.println();
+    loadLibraryFroFile();
+    //library.addNewBookToLibrary();
+    saveLibraryToFile();
+    library.showAllBooksInLibrary();
 
-       library.searchForBook("ur");
     }
 
+    private void saveLibraryToFile(){
+        LibraryFileUtils.serializeObject(library);
+    }
 
+    private void loadLibraryFroFile(){
+        setLibrary(LibraryFileUtils.deSerializeObject());
+    }
+
+    private void setLibrary(Object object){
+        if(object != null)
+            this.library = (Library) object;
+        else
+            this.library = new Library();
+    }
 }
