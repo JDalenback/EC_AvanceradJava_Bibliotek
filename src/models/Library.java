@@ -215,6 +215,10 @@ public class Library implements Serializable {
     }
 
 
+    public List<User> geUsers() {
+        return users;
+    }
+
     private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
                 "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
@@ -238,7 +242,6 @@ public class Library implements Serializable {
         booksInLibrary.add(book3);
         booksInLibrary.add(book4);
         booksInLibrary.add(book5);
-
     }
 }
 
