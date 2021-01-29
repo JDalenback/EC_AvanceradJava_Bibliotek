@@ -12,8 +12,8 @@ import java.util.stream.IntStream;
 
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
-    private List<Librarian> listOfLibrarians = new ArrayList<>();
-    private List<Visitor> listOfVisitors = new ArrayList<>();
+    private List<User> listOfAllUsers = new ArrayList<>();
+
 
     public Library() {
         //readInBooks();
@@ -86,123 +86,106 @@ public class Library implements Serializable {
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
     }
-    public Long setBookReturnTime() {
-        long timeNow = System.currentTimeMillis();
-        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
-    }
 
-    public void lendingStatusDate(long lendingPeriodInMs) {
-        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
-        Date returnDay = new Date(lendingPeriodInMs);
+//create new users and put them in list of allUsers
 
-        long timeNow = System.currentTimeMillis();
 
-        if (timeNow > lendingPeriodInMs) {
-            System.out.println("\nYour book is late!\nReturn to the library immediately.");
-        } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            System.out.printf("\nYour loan period is almost over.\n" +
-                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
-        } else {
-            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+
+        public Long setBookReturnTime () {
+            long timeNow = System.currentTimeMillis();
+            return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
         }
-    }
+
+        public void lendingStatusDate ( long lendingPeriodInMs){
+            DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+            Date returnDay = new Date(lendingPeriodInMs);
+
+            long timeNow = System.currentTimeMillis();
+
+            if (timeNow > lendingPeriodInMs) {
+                System.out.println("\nYour book is late!\nReturn to the library immediately.");
+            } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
+                System.out.printf("\nYour loan period is almost over.\n" +
+                        "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+            } else {
+                System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+            }
+        }
 
 //create new visitor and put it in list of users
-    public void createVisitor() {
-        String name;
-        String userID;
-        Scanner scan = new Scanner(System.in);
+        public void createVisitor () {
+            String name;
+            String userID;
+            String admin;
+            boolean adminBoolean = false;
 
-            System.out.print("-Create a visitor-\n\nName: ");
+            Scanner scan = new Scanner(System.in);
+
+            System.out.print("---Create a new USER---\n\nName: ");
             name = scan.nextLine();
             System.out.print("UserID: ");
             userID = scan.nextLine();
+            System.out.println("Admin? Enter \"yes\" or \"no\"");
+            admin = scan.nextLine();
 
-            Visitor newVisitor = new Visitor(name, userID);
-            listOfVisitors.add(newVisitor);
+            if (admin.equalsIgnoreCase("yes"))
+                adminBoolean = true;
+
+            User newUser = new User(name, userID, adminBoolean);
+            listOfAllUsers.add(newUser);
             System.out.println("\n" + name + " is now added to the system \n");
-    }
-
-    //create new librarian and put it in list of users
-    public void createLibrarian() {
-        String name;
-        String adminID;
-        Scanner scan = new Scanner(System.in);
-
-        System.out.print("-Create a Librarian-\n\nName: ");
-        name = scan.nextLine();
-        System.out.print("UserID: ");
-        adminID = scan.nextLine();
-
-        Librarian newLibrarian = new Librarian(name, adminID);
-        listOfLibrarians.add(newLibrarian);
-        System.out.println("\n" + name + ", is a new Librarian \n");
-    }
-
-    // To be removed when save/read file is implemented.
-
-    public void readInBooks() {
-        BookTracker bookTracker = new BookTracker();
-        Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
-                "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
-                "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.", bookTracker);
-        Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
-                "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
-                " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
-                "kärlek, sex och känslomässigt beroende.", bookTracker);
-        Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
-                "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
-                "egna minnen.", bookTracker);
-        Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
-                " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
-                "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.", bookTracker);
-        Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
-                " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.", bookTracker);
-
-
-        booksInLibrary.add(book1);
-        booksInLibrary.add(book2);
-        booksInLibrary.add(book3);
-        booksInLibrary.add(book4);
-        booksInLibrary.add(book5);
-
-    }
-
-
-    public static void serializeObject(Object library, String fileName){
-        try(FileOutputStream fileOutStream = new FileOutputStream(fileName);ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)){
-            objectOutStream.writeObject(library);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
 
-    public static Library deSerializeObject(){
-        Library library = null;
-        try(ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))){
-            library = (Library) objectInput.readObject();
-        }catch(Exception e){
-            e.printStackTrace();
+        // To be removed when save/read file is implemented.
+
+        public void readInBooks () {
+            BookTracker bookTracker = new BookTracker();
+            Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
+                    "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
+                    "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.", bookTracker);
+            Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
+                    "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
+                    " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
+                    "kärlek, sex och känslomässigt beroende.", bookTracker);
+            Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
+                    "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
+                    "egna minnen.", bookTracker);
+            Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
+                    " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
+                    "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.", bookTracker);
+            Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
+                    " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.", bookTracker);
+
+
+            booksInLibrary.add(book1);
+            booksInLibrary.add(book2);
+            booksInLibrary.add(book3);
+            booksInLibrary.add(book4);
+            booksInLibrary.add(book5);
+
         }
-        return library;
-
-    }
-
-    public List<Librarian> getListOfLibrarians() {
-        return listOfLibrarians;
-    }
-
-    public void setListOfLibrarians(List<Librarian> listOfLibrarians) {
-        this.listOfLibrarians = listOfLibrarians;
-    }
-
-    public List<Visitor> getListOfVisitors() {
-        return listOfVisitors;
-    }
-
-    public void setListOfVisitors(List<Visitor> listOfVisitors) {
-        this.listOfVisitors = listOfVisitors;
-    }
 
 
-}
+
+            public static void serializeObject (Object library, String fileName){
+                try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
+                    objectOutStream.writeObject(library);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            public static Library deSerializeObject () {
+                Library library = null;
+                try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
+                    library = (Library) objectInput.readObject();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return library;
+
+            }
+
+
+        }
+
