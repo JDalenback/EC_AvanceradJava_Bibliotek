@@ -7,14 +7,13 @@ public class Book implements Serializable {
     private String author;
     private String isbn;
     private String description;
-    private BookTracker bookTracker;
+    private BookTracker bookTracker = new BookTracker();
 
-    public Book(String title, String author, String isbn, String description, BookTracker bookTracker) {
+    public Book(String title, String author, String isbn, String description) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
-        this.description = description;
-        this.bookTracker = bookTracker;
+        this.description = description;;
     }
 
     public String getTitle() {

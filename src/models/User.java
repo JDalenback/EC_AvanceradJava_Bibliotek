@@ -1,14 +1,15 @@
 package models;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Serializable {
 
     private String name;
     private String userID;
     private boolean admin;
-    private HashMap<String, Book> myBookList = new HashMap<>();
+    private List<Book> myBooks = new ArrayList<>();
 
     public User(String name, String userID, boolean admin) {
         this.name = name;
@@ -32,21 +33,24 @@ public class User implements Serializable {
         this.userID = userID;
     }
 
-    public boolean isAdmin(boolean b) {
+    public boolean isAdmin() {
         return admin;
     }
-
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 
-    public HashMap<String, Book> getMyBookList() {
-        return myBookList;
+    public List<Book> getMyBooks() {
+        return myBooks;
     }
 
-    public void setMyBookList(HashMap<String, Book> myBookList) {
-        this.myBookList = myBookList;
+    public void addBookToMyBooks(Book book){
+        this.myBooks.add(book);
+    }
+
+    public void removeBookFromMyBooks(Book book){
+        myBooks.remove(book);
     }
 
     @Override
@@ -55,7 +59,7 @@ public class User implements Serializable {
                 "name='" + name + '\'' +
                 ", userID='" + userID + '\'' +
                 ", admin=" + admin +
-                ", myBookList=" + myBookList +
+                ", myBooks=" + myBooks +
                 '}';
     }
 }

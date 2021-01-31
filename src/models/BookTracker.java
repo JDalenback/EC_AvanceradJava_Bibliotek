@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class BookTracker implements Serializable {
     private boolean isAvailable;
     private long dateOfReturn;
-    private String userThatBorrowed;
+    private User userThatBorrowed;
 
     public BookTracker() {
         this.isAvailable = true;
@@ -29,11 +29,11 @@ public class BookTracker implements Serializable {
         this.dateOfReturn = dateOfReturn;
     }
 
-    public String getUserThatBorrowed() {
+    public User getUserThatBorrowed() {
         return userThatBorrowed;
     }
 
-    public void setUserThatBorrowed(String userThatBorrowed) {
+    public void setUserThatBorrowed(User userThatBorrowed) {
         this.userThatBorrowed = userThatBorrowed;
     }
 
