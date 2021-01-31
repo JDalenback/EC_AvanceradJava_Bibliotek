@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
@@ -147,6 +148,24 @@ public class Library implements Serializable {
         }
     }
 
+    public void getAllLenders() {
+        Stream<User> tempTest;
+        tempTest = users
+                .stream()
+                .filter(user -> !user.isAdmin());
+                tempTest.forEach(user ->
+                        System.out.println("-- Name: "+user.getName()+", ID: "+user.getUserID()+", Books: "+user.getMyBooks()));
+
+
+
+    }
+
+    private int indexOfUser(String inputID) {
+        return IntStream.range(0, users.size())
+                .filter(i -> users.get(i).getUserID().equalsIgnoreCase(inputID))
+                .findFirst().orElse(-1);
+    }
+
     //create new visitor and put it in list of users
     public void addUser() {
         String name;
@@ -171,6 +190,22 @@ public class Library implements Serializable {
         users.add(newUser);
         System.out.println("\n" + name + " is now added to the system \n");
     }
+
+    public void removeUser() {
+        Scanner scanner = new Scanner(System.in);
+        String userID;
+        System.out.println("\n--- Remove User ---\n");
+        System.out.print("UserID: ");
+        userID = scanner.nextLine();
+        int indexNo = indexOfUser(userID);
+        if (indexNo > 0) {
+            users.remove(indexNo);
+            System.out.print("User is removed.\n\n");
+        } else {
+            System.out.print("User was not found.\n\n");
+        }
+    }
+
 
     public User getSpecificUser(String userID) {
         Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
@@ -215,7 +250,7 @@ public class Library implements Serializable {
     }
 
 
-    public List<User> geUsers() {
+    public List<User> getUsers() {
         return users;
     }
 
@@ -244,4 +279,3 @@ public class Library implements Serializable {
         booksInLibrary.add(book5);
     }
 }
-

@@ -23,7 +23,7 @@ public class Menu {
                 password = scanner.nextLine();
 
                 List<User> matchingUser = getUserThatMatchNameAndPassword
-                        (library.geUsers(), userName, password);
+                        (library.getUsers(), userName, password);
 
                 if (matchingUser.size() > 0) {
                     if (checkUserType(matchingUser)) {
