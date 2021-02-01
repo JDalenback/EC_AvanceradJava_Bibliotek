@@ -50,6 +50,7 @@ public class Menu {
     }
 
     private void librarianMenu(String name) {
+        Library library = new Library();
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
