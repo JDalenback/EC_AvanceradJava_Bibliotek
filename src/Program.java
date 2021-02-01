@@ -11,7 +11,6 @@ public class Program {
 
         //library.populateMockupLibrary();
 
-        //library.showStatusOfBooks();
         Library.serializeObject(library, "src/models/books.ser");
     }
 

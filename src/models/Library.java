@@ -22,6 +22,15 @@ public class Library implements Serializable {
         booksInLibrary.forEach(System.out::println);
     }
 
+    public void showAvailableBooksInLibrary(){
+        List<Book> availableBooks = booksInLibrary
+                .stream()
+                .filter(book -> (book.getBookTracker().isAvailable()))
+                .collect(Collectors.toList());
+
+        availableBooks.forEach(System.out::println);
+    }
+
     public void showAllUsers() {
         System.out.println("All library users:");
         users.forEach(System.out::println);
