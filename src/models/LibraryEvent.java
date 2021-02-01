@@ -10,7 +10,8 @@ public class LibraryEvent implements Serializable {
     private String event;
     private Object data;
 
-    public LibraryEvent(){}
+    public LibraryEvent() {
+    }
 
     public LibraryEvent(String event, Object data) {
         this.event = event;

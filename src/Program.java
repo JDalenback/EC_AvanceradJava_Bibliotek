@@ -4,21 +4,14 @@ import models.Menu;
 
 import java.io.Serializable;
 
-public class Program implements Serializable{
+public class Program implements Serializable {
     private Library library = null;
     Menu menu = new Menu();
 
     public void start() {
         setLibrary(Library.deSerializeObject());
 
-        library.populateMockupLibrary();
-
-        library.showAllBooksInLibrary();
-
-        library.removeBookFromLibrary();
-
-        library.showAllBooksInLibrary();
-        //menu.login(library);
+        menu.login(library);
     }
 
     private void saveLibraryToFile() {
