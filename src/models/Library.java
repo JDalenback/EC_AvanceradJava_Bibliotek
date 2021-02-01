@@ -15,12 +15,19 @@ public class Library implements Serializable {
     private List<User> users = new ArrayList<>();
 
     public Library() {
-        //readInBooks();
+
+    }
+
+    public void showToUser(List<?> list){
+        list.forEach(System.out::println);
+    }
+
+    public void showToUser(Object object){
+        System.out.println(object);
     }
 
     public void showAllBooksInLibrary() {
-        System.out.println("All books in the library:");
-        booksInLibrary.forEach(System.out::println);
+        showToUser(booksInLibrary);
     }
 
     public void showAvailableBooksInLibrary(){
@@ -29,12 +36,11 @@ public class Library implements Serializable {
                 .filter(book -> (book.getBookTracker().isAvailable()))
                 .collect(Collectors.toList());
 
-        availableBooks.forEach(System.out::println);
+        showToUser(availableBooks);
     }
 
     public void showAllUsers() {
-        System.out.println("All library users:");
-        users.forEach(System.out::println);
+        showToUser(users);
     }
 
     public List<Book> searchForBook(String searchParameter) {
@@ -46,8 +52,7 @@ public class Library implements Serializable {
                 .collect(Collectors.toList());
 
         if (searchResult.size() > 0) {
-            System.out.println("Books found:");
-            searchResult.forEach(System.out::println);
+            showToUser(searchResult);
         } else
             System.out.println("Can't find that book in the library.");
 
@@ -238,9 +243,12 @@ public class Library implements Serializable {
         Library library = null;
         try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
             library = (Library) objectInput.readObject();
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
+            // New Library Will be created if file is not found.
+        }catch(Exception e){
             e.printStackTrace();
         }
+
         return library;
 
     }
