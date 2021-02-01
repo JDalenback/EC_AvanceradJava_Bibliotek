@@ -11,17 +11,14 @@ public class Program implements Serializable{
     public void start() {
         setLibrary(Library.deSerializeObject());
 
-        //library.populateMockupLibrary();
+        library.populateMockupLibrary();
 
-        library.watch("insert", event ->
-                library.serializeObject(library, "src/models/books.ser"));
+        library.showAllBooksInLibrary();
 
-        library.watch("delete", event  ->
-                library.serializeObject(library, "src/models/books.ser"));
+        library.removeBookFromLibrary();
 
-        library.showAllUsers();
-
-        menu.login(library);
+        library.showAllBooksInLibrary();
+        //menu.login(library);
     }
 
     private void saveLibraryToFile() {

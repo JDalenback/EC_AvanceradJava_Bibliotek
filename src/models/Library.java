@@ -15,7 +15,13 @@ public class Library implements Serializable {
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
 
     public Library() {
+        watch("insert", event ->{
+            serializeObject(this, "src/models/books.ser");
+            System.out.println(event.getEvent() + " " + event.getData());
+        });
 
+        watch("delete", event  ->
+                serializeObject(this, "src/models/books.ser"));
     }
 
     public void watch(String event, LibraryWatcher watcher){
