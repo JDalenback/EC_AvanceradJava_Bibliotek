@@ -1,5 +1,7 @@
 package models;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+
 import java.io.Serializable;
 import java.io.*;
 
@@ -246,6 +248,23 @@ public class Library implements Serializable {
             System.out.print("User was not found.\n\n");
         }
     }
+
+    public String getUserNameInput(){
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Name: ");
+        String tempName = scan.nextLine();
+        return tempName;
+    }
+
+    public void printUser (String userName) {
+        Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
+        if (user.isPresent()){
+            System.out.println("\n--- Name: "+userName+", UserID: "+user.get().getUserID()+ ", Books: "+user.get().getMyBooks()+"\n");
+        }
+        else
+            System.out.println("Sorry, user not found.");
+    }
+
 
 
     public User getSpecificUser(String userID) {

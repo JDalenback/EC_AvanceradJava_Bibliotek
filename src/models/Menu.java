@@ -31,9 +31,9 @@ public class Menu implements Serializable {
 
                 if (matchingUser.size() > 0) {
                     if (checkUserType(matchingUser)) {
-                        librarianMenu(userName);
+                        librarianMenu(library, userName);
                     } else {
-                        lenderMenu(userName);
+                        lenderMenu(library, userName);
                     }
                 } else System.out.println("Invalid name or password!");
             }
@@ -50,7 +50,8 @@ public class Menu implements Serializable {
         return list.get(0).isAdmin();
     }
 
-    private void librarianMenu(String name) {
+
+    private void librarianMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
@@ -79,7 +80,7 @@ public class Menu implements Serializable {
 
                     break;
                 case "4":
-
+                    
                     break;
                 case "5":
 
@@ -91,10 +92,10 @@ public class Menu implements Serializable {
 
                     break;
                 case "8":
-
+                    library.getAllLenders();
                     break;
                 case "9":
-
+                    library.printUser(library.getUserNameInput());
                     break;
                 case "15":
                     isRunning = false;
@@ -107,7 +108,7 @@ public class Menu implements Serializable {
 
     }
 
-    private void lenderMenu(String name) {
+    private void lenderMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
