@@ -30,9 +30,9 @@ public class Menu {
 
                 if (matchingUser.size() > 0) {
                     if (checkUserType(matchingUser)) {
-                        librarianMenu(userName);
+                        librarianMenu(library, userName);
                     } else {
-                        lenderMenu(userName);
+                        lenderMenu(library, userName);
                     }
                 } else System.out.println("Invalid name or password!");
             }
@@ -49,7 +49,7 @@ public class Menu {
         return list.get(0).isAdmin();
     }
 
-    private void librarianMenu(String name) {
+    private void librarianMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
@@ -78,7 +78,7 @@ public class Menu {
 
                     break;
                 case "4":
-
+                    
                     break;
                 case "5":
 
@@ -106,7 +106,7 @@ public class Menu {
 
     }
 
-    private void lenderMenu(String name) {
+    private void lenderMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
