@@ -1,5 +1,4 @@
 import Utils.LibraryFileUtils;
-import models.Book;
 import models.Library;
 import models.Menu;
 
@@ -12,22 +11,17 @@ public class Program implements Serializable{
     public void start() {
         setLibrary(Library.deSerializeObject());
 
+        //library.populateMockupLibrary();
+
         library.watch("insert", event ->
                 library.serializeObject(library, "src/models/books.ser"));
 
         library.watch("delete", event  ->
                 library.serializeObject(library, "src/models/books.ser"));
 
-        //library.populateMockupLibrary();
+        library.showAllUsers();
 
-        library.showAllBooksInLibrary();
-        library.removeBookFromLibrary();
-        System.out.println();
-        library.showAllBooksInLibrary();
-
-        
-        //Library.serializeObject(library, "src/models/books.ser");
-       // menu.login(library);
+        menu.login(library);
     }
 
     private void saveLibraryToFile() {
