@@ -12,7 +12,7 @@ public class Program {
         //library.populateMockupLibrary();
         
         Library.serializeObject(library, "src/models/books.ser");
-        //menu.login();
+        menu.login(library);
     }
 
     private void saveLibraryToFile() {
