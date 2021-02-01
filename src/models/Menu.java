@@ -87,10 +87,10 @@ public class Menu {
 
                     break;
                 case "8":
-
+                    library.getAllLenders();
                     break;
                 case "9":
-
+                    library.printUser(library.getUserNameInput());
                     break;
                 case "15":
                     isRunning = false;
