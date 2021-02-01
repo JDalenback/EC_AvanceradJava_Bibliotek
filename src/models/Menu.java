@@ -49,6 +49,7 @@ public class Menu {
         return list.get(0).isAdmin();
     }
 
+
     private void librarianMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
@@ -90,10 +91,10 @@ public class Menu {
 
                     break;
                 case "8":
-
+                    library.getAllLenders();
                     break;
                 case "9":
-
+                    library.printUser(library.getUserNameInput());
                     break;
                 case "15":
                     isRunning = false;
