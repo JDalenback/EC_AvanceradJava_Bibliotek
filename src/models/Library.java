@@ -60,7 +60,13 @@ public class Library implements Serializable {
     }
 
     public Book getSpecificBook(String searchParameter) {
-        List<Book> books = searchForBook(searchParameter);
+        List<Book> books = booksInLibrary
+                .stream()
+                .filter(book -> book.getTitle().matches(searchParameter) ||
+                        book.getAuthor().matches(searchParameter) ||
+                        book.getIsbn().matches(searchParameter))
+                .collect(Collectors.toList());
+
         if (books.size() > 0)
             return books.get(0);
         else

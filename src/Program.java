@@ -10,8 +10,7 @@ public class Program {
         setLibrary(Library.deSerializeObject());
 
         //library.populateMockupLibrary();
-        library.showAllUsers();
-
+        
         Library.serializeObject(library, "src/models/books.ser");
         //menu.login();
     }
