@@ -96,7 +96,7 @@ public class Menu implements Serializable {
                     library.getAllLenders();
                     break;
                 case "9":
-                    library.printUser(library.getInputFromUser("name"));
+                    library.printUser(library.getInputFromUser("Name: "));
                     break;
                 case "10":
                     library.removeUser();
