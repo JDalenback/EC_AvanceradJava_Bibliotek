@@ -1,10 +1,11 @@
 package models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class Menu {
+public class Menu implements Serializable {
 
 
     public void login(Library library) {
@@ -80,7 +81,7 @@ public class Menu {
 
                     break;
                 case "4":
-                    
+
                     break;
                 case "5":
 
