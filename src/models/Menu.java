@@ -55,9 +55,9 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", name);
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
             System.out.println("2. See all lent books");
             System.out.println("3. See all late returns");
@@ -72,10 +72,14 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("Available books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    library.printoutTitle("Lent books:");
+                    library.showAllLentBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "3":
 
@@ -94,12 +98,15 @@ public class Menu implements Serializable {
                     break;
                 case "8":
                     library.getAllLenders();
+                    library.createReadingPausForUser();
                     break;
                 case "9":
                     library.printUser(library.getInputFromUser("Name: "));
+                    library.createReadingPausForUser();
                     break;
                 case "10":
                     library.removeUser();
+                    library.createReadingPausForUser();
                     break;
                 case "15":
                     isRunning = false;
@@ -116,9 +123,9 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", name);
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
@@ -130,7 +137,9 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("Available books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
 

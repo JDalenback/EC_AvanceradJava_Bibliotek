@@ -53,6 +53,14 @@ public class Library implements Serializable {
 
         showToUser(availableBooks);
     }
+    public void showAllLentBooksInLibrary() {
+        List<Book> lentBooks = booksInLibrary
+                .stream()
+                .filter(book -> !(book.getBookTracker().isAvailable()))
+                .collect(Collectors.toList());
+
+        showToUser(lentBooks);
+    }
 
     public void showAllUsers() {
         showToUser(users);
@@ -311,6 +319,15 @@ public class Library implements Serializable {
             lendBookToUser(user, book);
         }
 
+    public void printoutTitle(String title) {
+        System.out.printf("\n%s\n\n", title);
+    }
+
+    public void createReadingPausForUser() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nPress enter to continue.");
+        String nothing = scanner.nextLine();
+    }
 
         public List<User> getUsers () {
             return users;
