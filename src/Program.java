@@ -10,7 +10,6 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(Library.deSerializeObject());
-
         menu.login(library);
     }
 
