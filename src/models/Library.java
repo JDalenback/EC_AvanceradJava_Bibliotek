@@ -1,7 +1,5 @@
 package models;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
-
 import java.io.Serializable;
 import java.io.*;
 
@@ -15,16 +13,31 @@ import java.util.stream.Stream;
 public class Library implements Serializable {
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
+    private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
 
     public Library() {
+        watch("insert", event ->
+                serializeObject(this, "src/models/books.ser"));
 
+        watch("delete", event ->
+                serializeObject(this, "src/models/books.ser"));
     }
 
-    public void showToUser(List<?> list){
+    public void watch(String event, LibraryWatcher watcher) {
+        watchers.putIfAbsent(event, new ArrayList<>());
+        watchers.get(event).add(watcher);
+    }
+
+    public void callWatchers(String event, Object data) {
+        watchers.get(event).forEach(watcher ->
+                watcher.handle(new LibraryEvent(event, data)));
+    }
+
+    public void showToUser(List<?> list) {
         list.forEach(System.out::println);
     }
 
-    public void showToUser(Object object){
+    public void showToUser(Object object) {
         System.out.println(object);
     }
 
@@ -32,7 +45,7 @@ public class Library implements Serializable {
         showToUser(booksInLibrary);
     }
 
-    public void showAvailableBooksInLibrary(){
+    public void showAvailableBooksInLibrary() {
         List<Book> availableBooks = booksInLibrary
                 .stream()
                 .filter(book -> (book.getBookTracker().isAvailable()))
@@ -109,17 +122,28 @@ public class Library implements Serializable {
     // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
-        String title;
+//        String title;
+//        System.out.println("\nRemove book.");
+//        System.out.print("Title: ");
+//        title = scanner.nextLine();
+//        int indexNo = indexOfBookName(title);
+//        if (indexNo > 0) {
+//            booksInLibrary.remove(indexNo);
+//            System.out.printf("Book %s has been removed from list.\n\n", title);
+//        } else {
+//            System.out.printf("Book %s can't be found in the library!\n\n", title);
+//        }
+
         System.out.println("\nRemove book.");
         System.out.print("Title: ");
-        title = scanner.nextLine();
-        int indexNo = indexOfBookName(title);
-        if (indexNo > 0) {
-            booksInLibrary.remove(indexNo);
+        String title = scanner.nextLine();
+        Book book = getSpecificBook(title);
+        if (book != null) {
+            booksInLibrary.remove(book);
             System.out.printf("Book %s has been removed from list.\n\n", title);
-        } else {
-            System.out.printf("Book %s can't be found in the library!\n\n", title);
-        }
+            callWatchers("delete", booksInLibrary);
+        } else
+            System.out.println("Book not found");
     }
 
     public void addNewBookToLibrary() {
@@ -144,6 +168,7 @@ public class Library implements Serializable {
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
+        callWatchers("insert", booksInLibrary);
     }
 
 //create new users and put them in list of allUsers
@@ -175,11 +200,8 @@ public class Library implements Serializable {
         tempTest = users
                 .stream()
                 .filter(user -> !user.isAdmin());
-                tempTest.forEach(user ->
-                        System.out.println("-- Name: "+user.getName()+", ID: "+user.getUserID()+", Books: "+user.getMyBooks()));
-
-
-
+        tempTest.forEach(user ->
+                System.out.println("-- Name: " + user.getName() + ", ID: " + user.getUserID() + ", Books: " + user.getMyBooks()));
     }
 
     private int indexOfUser(String inputID) {
@@ -228,22 +250,20 @@ public class Library implements Serializable {
         }
     }
 
-    public String getUserNameInput(){
+    public String getUserNameInput() {
         Scanner scan = new Scanner(System.in);
         System.out.print("Name: ");
         String tempName = scan.nextLine();
         return tempName;
     }
 
-    public void printUser (String userName) {
+    public void printUser(String userName) {
         Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
-        if (user.isPresent()){
-            System.out.println("\n--- Name: "+userName+", UserID: "+user.get().getUserID()+ ", Books: "+user.get().getMyBooks()+"\n");
-        }
-        else
+        if (user.isPresent()) {
+            System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
+        } else
             System.out.println("Sorry, user not found.");
     }
-
 
 
     public User getSpecificUser(String userID) {
@@ -270,7 +290,7 @@ public class Library implements Serializable {
             library = (Library) objectInput.readObject();
         } catch (FileNotFoundException e) {
             // New Library Will be created if file is not found.
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

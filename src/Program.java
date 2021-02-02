@@ -2,16 +2,15 @@ import Utils.LibraryFileUtils;
 import models.Library;
 import models.Menu;
 
-public class Program {
+import java.io.Serializable;
+
+public class Program implements Serializable {
     private Library library = null;
     Menu menu = new Menu();
 
     public void start() {
         setLibrary(Library.deSerializeObject());
 
-        //library.populateMockupLibrary();
-        
-        Library.serializeObject(library, "src/models/books.ser");
         menu.login(library);
     }
 

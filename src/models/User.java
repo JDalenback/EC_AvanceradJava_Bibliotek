@@ -45,11 +45,11 @@ public class User implements Serializable {
         return myBooks;
     }
 
-    public void addBookToMyBooks(Book book){
+    public void addBookToMyBooks(Book book) {
         this.myBooks.add(book);
     }
 
-    public void removeBookFromMyBooks(Book book){
+    public void removeBookFromMyBooks(Book book) {
         myBooks.remove(book);
     }
 
