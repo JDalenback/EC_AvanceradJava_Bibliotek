@@ -176,7 +176,7 @@ public class Library implements Serializable {
                 .stream()
                 .filter(user -> !user.isAdmin());
                 tempTest.forEach(user ->
-                        System.out.println("-- Name: "+user.getName()+", ID: "+user.getUserID()+", Books: "+user.getMyBooks()));
+                        System.out.println("-- Name: "+user.getName()+", ID: "+user.getUserID()+", Books: "+user.getMyBooks()+"\n"));
 
 
 
@@ -228,9 +228,9 @@ public class Library implements Serializable {
         }
     }
 
-    public String getUserNameInput(){
+    public String getInputFromUser(String input){
         Scanner scan = new Scanner(System.in);
-        System.out.print("Name: ");
+        System.out.print(input+": ");
         String tempName = scan.nextLine();
         return tempName;
     }
