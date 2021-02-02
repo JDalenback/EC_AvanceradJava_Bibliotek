@@ -252,7 +252,7 @@ public class Library implements Serializable {
 
     public String getInputFromUser(String input) {
             Scanner scan = new Scanner(System.in);
-            System.out.print(input + ": ");
+            System.out.print(input);
             String tempName = scan.nextLine();
             return tempName;
         }
