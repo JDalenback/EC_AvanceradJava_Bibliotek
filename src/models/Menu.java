@@ -1,13 +1,14 @@
 package models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class Menu {
-    Library library = new Library();
+public class Menu implements Serializable {
 
-    public void login() {
+
+    public void login(Library library) {
         Scanner scanner = new Scanner(System.in);
         String userName;
         String password;
@@ -27,9 +28,9 @@ public class Menu {
 
                 if (matchingUser.size() > 0) {
                     if (checkUserType(matchingUser)) {
-                        librarianMenu(userName);
+                        librarianMenu(library, userName);
                     } else {
-                        lenderMenu(userName);
+                        lenderMenu(library, userName);
                     }
                 } else System.out.println("Invalid name or password!");
             }
@@ -46,13 +47,14 @@ public class Menu {
         return list.get(0).isAdmin();
     }
 
-    private void librarianMenu(String name) {
+
+    private void librarianMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", name);
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
             System.out.println("2. See all lent books");
             System.out.println("3. See all late returns");
@@ -60,16 +62,21 @@ public class Menu {
             System.out.println("5. Return book");
             System.out.println("6. Add a new book to the library.");
             System.out.println("7. Remove book from library.");
-            System.out.println("8. See all lender.");
+            System.out.println("8. See all lenders.");
             System.out.println("9. See lender by name.");
+            System.out.println("10. Remove user from library");
             System.out.println("15. Logg out");
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("Available books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    library.printoutTitle("Lent books:");
+                    library.showAllLentBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "3":
 
@@ -87,10 +94,16 @@ public class Menu {
 
                     break;
                 case "8":
-
+                    library.getAllLenders();
+                    library.createReadingPausForUser();
                     break;
                 case "9":
-
+                    library.printUser(library.getInputFromUser("Name: "));
+                    library.createReadingPausForUser();
+                    break;
+                case "10":
+                    library.removeUser();
+                    library.createReadingPausForUser();
                     break;
                 case "15":
                     isRunning = false;
@@ -103,13 +116,13 @@ public class Menu {
 
     }
 
-    private void lenderMenu(String name) {
+    private void lenderMenu(Library library, String name) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", name);
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
@@ -121,7 +134,9 @@ public class Menu {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("Available books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
 
