@@ -1,6 +1,7 @@
 import Utils.LibraryFileUtils;
 import models.Library;
 import models.Menu;
+import models.User;
 
 public class Program {
     private Library library = null;
@@ -10,9 +11,10 @@ public class Program {
         setLibrary(Library.deSerializeObject());
 
         //library.populateMockupLibrary();
-        
-        Library.serializeObject(library, "src/models/books.ser");
-        //menu.login();
+        library.populateMockupLibrary();
+        library.checkIfUserNameExists(new User("Molly", "12345", false));
+        //Library.serializeObject(library, "src/models/books.ser");
+        menu.login();
     }
 
     private void saveLibraryToFile() {

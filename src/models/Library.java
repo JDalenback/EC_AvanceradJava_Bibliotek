@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -16,6 +18,21 @@ public class Library implements Serializable {
 
     public Library() {
 
+    }
+
+    public void checkIfUserNameExists(Object name){
+        Boolean nameCheck = false;
+        String[] nameSplit = name.toString().split("\'");
+        System.out.println(nameSplit[1]);
+        List<Object> tempName = new ArrayList<>(users);
+        for(Object item : tempName){
+            if(item.toString().contains(nameSplit[1])){
+                nameCheck = true;
+            }
+        }
+        if(nameCheck){
+            System.out.println("An user already has that name. You need to choose another.");
+        }
     }
 
     public void showToUser(List<?> list){
@@ -263,7 +280,7 @@ public class Library implements Serializable {
     public void populateMockupLibrary() {
         readInBooks();
         users.add(new User("John Doe", "12345", false));
-        users.add(new User("Molly", "23456", true));
+        users.add(new User("Molly", "123", true));
         users.add(new User("Andy", "34567", true));
         users.add(new User("Misty", "45678", false));
 
