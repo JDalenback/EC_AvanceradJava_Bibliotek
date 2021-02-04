@@ -21,17 +21,16 @@ public class Library implements Serializable {
     }
 
     public void checkIfUserNameExists(Object name){
-        Boolean nameCheck = false;
         String[] nameSplit = name.toString().split("\'");
-        System.out.println(nameSplit[1]);
         List<Object> tempName = new ArrayList<>(users);
         for(Object item : tempName){
             if(item.toString().contains(nameSplit[1])){
-                nameCheck = true;
+                try{
+                    throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
-        }
-        if(nameCheck){
-            System.out.println("An user already has that name. You need to choose another.");
         }
     }
 
