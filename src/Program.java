@@ -9,11 +9,12 @@ public class Program implements Serializable {
     Menu menu = new Menu();
 
     public void start() {
-        setLibrary(Library.deSerializeObject());
-
-        library.populateMockupLibrary();
-
-        menu.login(library);
+        setLibrary(LibraryFileUtils.deSerializeObject());
+        library.showAllBooksInLibrary();
+        library.showAllUsers();
+        //library.addNewBookToLibrary();
+        //library.removeBookFromLibrary();
+        //menu.login(library);
     }
 
     private void saveLibraryToFile() {
@@ -25,9 +26,10 @@ public class Program implements Serializable {
     }
 
     private void setLibrary(Object object) {
-        if (object != null)
+        if (object != null) {
             this.library = (Library) object;
+        }
         else
-            this.library = new Library();
+            this.library = Library.getLibraryInstance();
     }
 }
