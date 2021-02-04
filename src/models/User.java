@@ -3,6 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class User implements Serializable {
 
@@ -39,6 +40,14 @@ public class User implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public void printMyBooks(){
+        Stream<Book> printBook;
+        printBook = myBooks.stream();
+        printBook.forEach(book ->
+                System.out.println("--- " + book.getTitle() + ", written by " + book.getAuthor() + ". ISBN: " + book.getIsbn() + " --- \n"));
+
     }
 
     public List<Book> getMyBooks() {

@@ -226,7 +226,6 @@ public class Library implements Serializable {
         System.out.println("Admin? Enter \"yes\" or \"no\"");
         admin = scan.nextLine();
 
-
         if (admin.equalsIgnoreCase("yes"))
             adminBoolean = true;
 
