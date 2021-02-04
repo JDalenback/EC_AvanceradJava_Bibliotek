@@ -14,9 +14,6 @@ public class Menu implements Serializable {
         String password;
         boolean isRunning = true;
 
-        // To be removed when we have our own accounts.
-        library.getUsers().forEach(System.out::println);
-
         while (isRunning) {
             System.out.print("\nWelcome to the library login page!\n\nType quit to end\nUsername: ");
             userName = scanner.nextLine();

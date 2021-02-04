@@ -1,8 +1,8 @@
 package models;
 
-import java.io.Serializable;
-import java.io.*;
+import Utils.LibraryFileUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,16 +11,27 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
+    private static Library libraryInstance = null;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
 
-    public Library() {
+    private Library() {
+        initializeWatchers();
+    }
+
+    private void initializeWatchers(){
         watch("insert", event ->
-                serializeObject(this, "src/models/books.ser"));
+                LibraryFileUtils.serializeObject(this));
 
         watch("delete", event ->
-                serializeObject(this, "src/models/books.ser"));
+                LibraryFileUtils.serializeObject(this));
+
+        watch("lendBook", event ->
+                LibraryFileUtils.serializeObject(this));
+
+        watch("returnBook", event ->
+                LibraryFileUtils.serializeObject(this));
     }
 
     public void watch(String event, LibraryWatcher watcher) {
@@ -53,6 +64,7 @@ public class Library implements Serializable {
 
         showToUser(availableBooks);
     }
+
     public void showAllLentBooksInLibrary() {
         List<Book> lentBooks = booksInLibrary
                 .stream()
@@ -110,6 +122,8 @@ public class Library implements Serializable {
         bookTracker.setUserThatBorrowed(user);
         bookTracker.setDateOfReturn(setBookReturnTime());
         user.addBookToMyBooks(book);
+
+        callWatchers("lendBook", book);
     }
 
     public void returnBookFromUser(User user, Book book) {
@@ -118,6 +132,8 @@ public class Library implements Serializable {
         bookTracker.setUserThatBorrowed(null);
         bookTracker.setDateOfReturn(0);
         user.removeBookFromMyBooks(book);
+
+        callWatchers("returnBook", book);
     }
 
 
@@ -130,25 +146,13 @@ public class Library implements Serializable {
     // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
-//        String title;
-//        System.out.println("\nRemove book.");
-//        System.out.print("Title: ");
-//        title = scanner.nextLine();
-//        int indexNo = indexOfBookName(title);
-//        if (indexNo > 0) {
-//            booksInLibrary.remove(indexNo);
-//            System.out.printf("Book %s has been removed from list.\n\n", title);
-//        } else {
-//            System.out.printf("Book %s can't be found in the library!\n\n", title);
-//        }
-
         System.out.println("\nRemove book.");
         System.out.print("Title: ");
         String title = scanner.nextLine();
         Book book = getSpecificBook(title);
         if (book != null) {
             booksInLibrary.remove(book);
-            System.out.printf("Book %s has been removed from list.\n\n", title);
+            System.out.printf ("Book %s has been removed from list.\n\n", title);
             callWatchers("delete", booksInLibrary);
         } else
             System.out.println("Book not found");
@@ -176,7 +180,7 @@ public class Library implements Serializable {
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
-        callWatchers("insert", booksInLibrary);
+        callWatchers("insert", newBook);
     }
 
 //create new users and put them in list of allUsers
@@ -241,8 +245,12 @@ public class Library implements Serializable {
         User newUser = new User(name, userID, adminBoolean);
         users.add(newUser);
         System.out.println("\n" + name + " is now added to the system \n");
+
+        callWatchers("insert", newUser);
     }
 
+    // This method should have the user to be removed as a parameter.
+    // We should not rely on the index of the object in the List.
     public void removeUser() {
         Scanner scanner = new Scanner(System.in);
         String userID;
@@ -256,68 +264,45 @@ public class Library implements Serializable {
         } else {
             System.out.print("User was not found.\n\n");
         }
+
+        callWatchers("delete", users);
     }
 
     public String getInputFromUser(String input) {
-            Scanner scan = new Scanner(System.in);
-            System.out.print(input);
-            String tempName = scan.nextLine();
-            return tempName;
-        }
+        Scanner scan = new Scanner(System.in);
+        System.out.print(input);
+        String tempName = scan.nextLine();
+        return tempName;
+    }
 
-        public void printUser (String userName){
-            Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
-            if (user.isPresent()) {
-                System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
-            } else
-                System.out.println("Sorry, user not found.");
-        }
-
-
-        public User getSpecificUser (String userID){
-            Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
-            if (user.isPresent())
-                return user.get();
-            else
-                return null;
-        }
-
-        // To be removed when save/read file is implemented.
-
-        public static void serializeObject (Object library, String fileName){
-            try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
-                objectOutStream.writeObject(library);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        public static Library deSerializeObject () {
-            Library library = null;
-            try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
-                library = (Library) objectInput.readObject();
-            } catch (FileNotFoundException e) {
-                // New Library Will be created if file is not found.
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return library;
-
-        }
+    public void printUser(String userName) {
+        Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
+        if (user.isPresent()) {
+            System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
+        } else
+            System.out.println("Sorry, user not found.");
+    }
 
 
-        public void populateMockupLibrary () {
-            readInBooks();
-            users.add(new User("John Doe", "12345", false));
-            users.add(new User("Molly", "23456", true));
-            users.add(new User("Andy", "34567", true));
-            users.add(new User("Misty", "45678", false));
+    public User getSpecificUser(String userID) {
+        Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
+        if (user.isPresent())
+            return user.get();
+        else
+            return null;
+    }
 
-            User user = getSpecificUser("12345");
-            Book book = getSpecificBook("Vita tänder");
-            lendBookToUser(user, book);
-        }
+    public void populateMockupLibrary() {
+        readInBooks();
+        users.add(new User("John Doe", "12345", false));
+        users.add(new User("Molly", "23456", true));
+        users.add(new User("Andy", "34567", true));
+        users.add(new User("Misty", "45678", false));
+
+        User user = getSpecificUser("12345");
+        Book book = getSpecificBook("Vita tänder");
+        lendBookToUser(user, book);
+    }
 
     public void printoutTitle(String title) {
         System.out.printf("\n%s\n\n", title);
@@ -329,32 +314,40 @@ public class Library implements Serializable {
         String nothing = scanner.nextLine();
     }
 
-        public List<User> getUsers () {
-            return users;
-        }
-
-        private void readInBooks () {
-            Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
-                    "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
-                    "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.");
-            Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
-                    "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
-                    " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
-                    "kärlek, sex och känslomässigt beroende.");
-            Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
-                    "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
-                    "egna minnen.");
-            Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
-                    " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
-                    "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.");
-            Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
-                    " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.");
-
-
-            booksInLibrary.add(book1);
-            booksInLibrary.add(book2);
-            booksInLibrary.add(book3);
-            booksInLibrary.add(book4);
-            booksInLibrary.add(book5);
-        }
+    public List<User> getUsers() {
+        return users;
     }
+
+    public static Library getLibraryInstance() {
+        if(libraryInstance == null)
+            libraryInstance = new Library();
+        return libraryInstance;
+    }
+
+
+    // Test method. Use to populate library with a few books and users. To be removed!
+    private void readInBooks() {
+        Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
+                "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
+                "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.");
+        Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
+                "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
+                " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
+                "kärlek, sex och känslomässigt beroende.");
+        Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
+                "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
+                "egna minnen.");
+        Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
+                " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
+                "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.");
+        Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
+                " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.");
+
+
+        booksInLibrary.add(book1);
+        booksInLibrary.add(book2);
+        booksInLibrary.add(book3);
+        booksInLibrary.add(book4);
+        booksInLibrary.add(book5);
+    }
+}
