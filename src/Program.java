@@ -10,11 +10,7 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-        library.showAllBooksInLibrary();
-        library.showAllUsers();
-        //library.addNewBookToLibrary();
-        //library.removeBookFromLibrary();
-        //menu.login(library);
+        menu.login(library);
     }
 
     private void saveLibraryToFile() {

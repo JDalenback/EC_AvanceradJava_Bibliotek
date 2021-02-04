@@ -146,18 +146,6 @@ public class Library implements Serializable {
     // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
-//        String title;
-//        System.out.println("\nRemove book.");
-//        System.out.print("Title: ");
-//        title = scanner.nextLine();
-//        int indexNo = indexOfBookName(title);
-//        if (indexNo > 0) {
-//            booksInLibrary.remove(indexNo);
-//            System.out.printf("Book %s has been removed from list.\n\n", title);
-//        } else {
-//            System.out.printf("Book %s can't be found in the library!\n\n", title);
-//        }
-
         System.out.println("\nRemove book.");
         System.out.print("Title: ");
         String title = scanner.nextLine();
