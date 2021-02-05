@@ -2,7 +2,7 @@ package models;
 
 import Utils.LibraryFileUtils;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -132,7 +132,12 @@ public class Library implements Serializable {
         });
     }
 
+    public boolean isBookAvailable(Book book) {
+        return book.getBookTracker().isAvailable();
+    }
+
     public void lendBookToUser(User user, Book book) {
+
         BookTracker bookTracker = book.getBookTracker();
         bookTracker.setAvailable(false);
         bookTracker.setUserThatBorrowed(user);
@@ -291,6 +296,7 @@ public class Library implements Serializable {
         return tempName;
     }
 
+
     public void printUser(String userName) {
         Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
         if (user.isPresent()) {
@@ -308,10 +314,35 @@ public class Library implements Serializable {
             return null;
     }
 
+    // To be removed when save/read file is implemented.
+
+    public static void serializeObject(Object library, String fileName) {
+        try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
+            objectOutStream.writeObject(library);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Library deSerializeObject() {
+        Library library = null;
+        try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
+            library = (Library) objectInput.readObject();
+        } catch (FileNotFoundException e) {
+            // New Library Will be created if file is not found.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return library;
+
+    }
+
+
     public void populateMockupLibrary() {
         readInBooks();
         users.add(new User("John Doe", "12345", false));
-        users.add(new User("Molly", "123", true));
+        users.add(new User("Molly", "23456", true));
         users.add(new User("Andy", "34567", true));
         users.add(new User("Misty", "45678", false));
 
@@ -342,6 +373,7 @@ public class Library implements Serializable {
 
 
     // Test method. Use to populate library with a few books and users. To be removed!
+
     private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
                 "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
@@ -366,4 +398,5 @@ public class Library implements Serializable {
         booksInLibrary.add(book4);
         booksInLibrary.add(book5);
     }
+
 }

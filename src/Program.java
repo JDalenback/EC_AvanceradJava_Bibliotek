@@ -14,7 +14,7 @@ public class Program implements Serializable {
 
         //library.populateMockupLibrary();
         library.populateMockupLibrary();
-        library.checkIfUserNameExists(new User("Molly", "12345", false));
+    //    library.checkIfUserNameExists(new User("Molly", "12345", false));
         //Library.serializeObject(library, "src/models/books.ser");
         //menu.login();
         menu.login(library);
