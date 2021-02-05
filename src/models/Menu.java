@@ -73,17 +73,19 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-                    library.printoutTitle("Available books:");
+                    library.printoutTitle("\t\tAvailable books:");
                     library.showAvailableBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "2":
-                    library.printoutTitle("Lent books:");
+                    library.printoutTitle("\t\tLent books:");
                     library.showAllLentBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "3":
-
+                    library.printoutTitle("\t\tLate books:");
+                    library.showAllLateBooks();
+                    library.createReadingPausForUser();
                     break;
                 case "4":
                     library.printoutTitle("Lend a book:");
@@ -174,7 +176,8 @@ public class Menu implements Serializable {
 
                     break;
                 case "4":
-
+                    library.printMyBooks(user);
+                    library.createReadingPausForUser();
                     break;
                 case "5":
 

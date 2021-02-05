@@ -60,9 +60,15 @@ public class Library implements Serializable {
                 watcher.handle(new LibraryEvent(event, data)));
     }
 
+
     public void showToUser(List<?> list) {
-        list.forEach(System.out::println);
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println("\t\t"+(i+1)+".\t"+list.get(i));
+            } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
     }
+
 
     public void showToUser(Object object) {
         System.out.println(object);
@@ -89,6 +95,17 @@ public class Library implements Serializable {
 
         showToUser(lentBooks);
     }
+
+    public void showAllLateBooks() {
+        long currentTime = System.currentTimeMillis();
+        List<Book> lateBooks = booksInLibrary
+                .stream()
+                .filter(book -> book.getBookTracker().getDateOfReturn()>0&&book.getBookTracker().getDateOfReturn()<currentTime)
+                .collect(Collectors.toList());
+
+        showToUser(lateBooks);
+    }
+
 
     public void showAllUsers() {
         showToUser(users);
@@ -212,6 +229,7 @@ public class Library implements Serializable {
         return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
 
+
     public void lendingStatusDate(long lendingPeriodInMs) {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         Date returnDay = new Date(lendingPeriodInMs);
@@ -219,13 +237,22 @@ public class Library implements Serializable {
         long timeNow = System.currentTimeMillis();
 
         if (timeNow > lendingPeriodInMs) {
-            System.out.println("\nYour book is late!\nReturn to the library immediately.");
+            System.out.println("\t-\tYour book is late! Return to the library immediately.");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            System.out.printf("\nYour loan period is almost over.\n" +
+            System.out.printf("\t-\tYour loan period is almost over.\n" +
                     "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
         } else {
-            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+            System.out.printf("\t-\tReturn the book latest %s.\n", dayPattern.format(returnDay));
         }
+    }
+
+    public void printMyBooks(User user) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        for (int i = 0; i < user.getMyBooks().size(); i++) {
+            long temp = user.getMyBooks().get(i).getBookTracker().getDateOfReturn();
+            System.out.print("\t\t"+(i+1)+".\t"+user.getMyBooks().get(i).getTitle()+", written by "+ user.getMyBooks().get(i).getAuthor());
+            lendingStatusDate(temp);
+        } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void getAllLenders() {
@@ -258,7 +285,6 @@ public class Library implements Serializable {
         userID = scan.nextLine();
         System.out.println("Admin? Enter \"yes\" or \"no\"");
         admin = scan.nextLine();
-
 
         if (admin.equalsIgnoreCase("yes"))
             adminBoolean = true;
@@ -296,7 +322,6 @@ public class Library implements Serializable {
         return tempName;
     }
 
-
     public void printUser(String userName) {
         Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
         if (user.isPresent()) {
@@ -304,6 +329,8 @@ public class Library implements Serializable {
         } else
             System.out.println("Sorry, user not found.");
     }
+
+    // To be removed when save/read file is implemented.
 
 
     public User getSpecificUser(String userID) {
@@ -348,6 +375,9 @@ public class Library implements Serializable {
 
         User user = getSpecificUser("12345");
         Book book = getSpecificBook("Vita tänder");
+        Book book2 = getSpecificBook("Återstoden av dagen");
+        lendBookToUser(user, book);
+        lendBookToUser(user, book2);
         lendBookToUser(user, book);
     }
 
@@ -364,6 +394,7 @@ public class Library implements Serializable {
     public List<User> getUsers() {
         return users;
     }
+
 
     public static Library getLibraryInstance() {
         if(libraryInstance == null)
