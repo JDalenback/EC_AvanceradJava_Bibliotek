@@ -1,26 +1,53 @@
 package models;
 
-import java.io.Serializable;
-import java.io.*;
+import Utils.LibraryFileUtils;
 
+import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
+    private static Library libraryInstance = null;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
 
-    public Library() {
+    private Library() {
+        initializeWatchers();
+    }
+
+    private void initializeWatchers(){
         watch("insert", event ->
-                serializeObject(this, "src/models/books.ser"));
+                LibraryFileUtils.serializeObject(this));
 
         watch("delete", event ->
-                serializeObject(this, "src/models/books.ser"));
+                LibraryFileUtils.serializeObject(this));
+
+        watch("lendBook", event ->
+                LibraryFileUtils.serializeObject(this));
+
+        watch("returnBook", event ->
+                LibraryFileUtils.serializeObject(this));
+    }
+
+    public void checkIfUserNameExists(Object name){
+        String[] nameSplit = name.toString().split("\'");
+        List<Object> tempName = new ArrayList<>(users);
+        for(Object item : tempName){
+            if(item.toString().contains(nameSplit[1])){
+                try{
+                    throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void watch(String event, LibraryWatcher watcher) {
@@ -35,12 +62,13 @@ public class Library implements Serializable {
 
 
     public void showToUser(List<?> list) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println("\t\t"+(i+1)+".\t"+list.get(i));
-        } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println("\t\t"+(i+1)+".\t"+list.get(i));
+            } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
 
     }
+
 
     public void showToUser(Object object) {
         System.out.println(object);
@@ -121,12 +149,19 @@ public class Library implements Serializable {
         });
     }
 
+    public boolean isBookAvailable(Book book) {
+        return book.getBookTracker().isAvailable();
+    }
+
     public void lendBookToUser(User user, Book book) {
+
         BookTracker bookTracker = book.getBookTracker();
         bookTracker.setAvailable(false);
         bookTracker.setUserThatBorrowed(user);
         bookTracker.setDateOfReturn(setBookReturnTime());
         user.addBookToMyBooks(book);
+
+        callWatchers("lendBook", book);
     }
 
     public void returnBookFromUser(User user, Book book) {
@@ -135,6 +170,8 @@ public class Library implements Serializable {
         bookTracker.setUserThatBorrowed(null);
         bookTracker.setDateOfReturn(0);
         user.removeBookFromMyBooks(book);
+
+        callWatchers("returnBook", book);
     }
 
 
@@ -147,25 +184,13 @@ public class Library implements Serializable {
     // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
-//        String title;
-//        System.out.println("\nRemove book.");
-//        System.out.print("Title: ");
-//        title = scanner.nextLine();
-//        int indexNo = indexOfBookName(title);
-//        if (indexNo > 0) {
-//            booksInLibrary.remove(indexNo);
-//            System.out.printf("Book %s has been removed from list.\n\n", title);
-//        } else {
-//            System.out.printf("Book %s can't be found in the library!\n\n", title);
-//        }
-
         System.out.println("\nRemove book.");
         System.out.print("Title: ");
         String title = scanner.nextLine();
         Book book = getSpecificBook(title);
         if (book != null) {
             booksInLibrary.remove(book);
-            System.out.printf("Book %s has been removed from list.\n\n", title);
+            System.out.printf ("Book %s has been removed from list.\n\n", title);
             callWatchers("delete", booksInLibrary);
         } else
             System.out.println("Book not found");
@@ -193,7 +218,7 @@ public class Library implements Serializable {
         booksInLibrary.add(newBook);
         System.out.printf("Book %S added to list.\n\n", bookTitle);
 
-        callWatchers("insert", booksInLibrary);
+        callWatchers("insert", newBook);
     }
 
 //create new users and put them in list of allUsers
@@ -201,7 +226,7 @@ public class Library implements Serializable {
 
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
-        return timeNow -20;//+ 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
 
 
@@ -267,8 +292,12 @@ public class Library implements Serializable {
         User newUser = new User(name, userID, adminBoolean);
         users.add(newUser);
         System.out.println("\n" + name + " is now added to the system \n");
+
+        callWatchers("insert", newUser);
     }
 
+    // This method should have the user to be removed as a parameter.
+    // We should not rely on the index of the object in the List.
     public void removeUser() {
         Scanner scanner = new Scanner(System.in);
         String userID;
@@ -282,6 +311,8 @@ public class Library implements Serializable {
         } else {
             System.out.print("User was not found.\n\n");
         }
+
+        callWatchers("delete", users);
     }
 
     public String getInputFromUser(String input) {
@@ -298,6 +329,8 @@ public class Library implements Serializable {
         } else
             System.out.println("Sorry, user not found.");
     }
+
+    // To be removed when save/read file is implemented.
 
 
     public User getSpecificUser(String userID) {
@@ -345,6 +378,7 @@ public class Library implements Serializable {
         Book book2 = getSpecificBook("Återstoden av dagen");
         lendBookToUser(user, book);
         lendBookToUser(user, book2);
+        lendBookToUser(user, book);
     }
 
     public void printoutTitle(String title) {
@@ -360,6 +394,16 @@ public class Library implements Serializable {
     public List<User> getUsers() {
         return users;
     }
+
+
+    public static Library getLibraryInstance() {
+        if(libraryInstance == null)
+            libraryInstance = new Library();
+        return libraryInstance;
+    }
+
+
+    // Test method. Use to populate library with a few books and users. To be removed!
 
     private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
@@ -385,4 +429,5 @@ public class Library implements Serializable {
         booksInLibrary.add(book4);
         booksInLibrary.add(book5);
     }
+
 }

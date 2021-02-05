@@ -12,11 +12,8 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         String userName;
         String password;
-        boolean isRunning = true;
         User user;
-
-        // To be removed when we have our own accounts.
-        library.getUsers().forEach(System.out::println);
+        boolean isRunning = true;
 
         while (isRunning) {
             System.out.print("\nWelcome to the library login page!\n\nType quit to end\nUsername: ");
@@ -57,6 +54,8 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
+        String tempTitle;
+        Book book;
         System.out.printf("\nWelcome %s!", user.getName());
         while (isRunning) {
             System.out.println("\nMake one choice:");
@@ -89,16 +88,41 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "4":
-
+                    library.printoutTitle("Lend a book:");
+                    library.showAvailableBooksInLibrary();
+                    tempTitle = library.getInputFromUser("Title of book: ");
+                    book = library.getSpecificBook(tempTitle);
+                    if (book != null) {
+                        library.lendBookToUser(user, book);
+                        library.printoutTitle(book.getTitle() + " has been lent to you.");
+                    } else {
+                        library.printoutTitle("Book " + tempTitle + " not found, " +
+                                "no book has benn lent to you");
+                    }
+                    library.createReadingPausForUser();
                     break;
                 case "5":
-
+                    library.printoutTitle("Return a book:");
+                    user.getMyBooks().stream()
+                            .map(Book::getTitle)
+                            .forEach(System.out::println);
+                    tempTitle = library.getInputFromUser("Title of book: ");
+                    book = library.getSpecificBook(tempTitle);
+                    if (book != null) {
+                        library.returnBookFromUser(user, book);
+                        library.printoutTitle(book.getTitle() + " has been returned.");
+                    } else {
+                        library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
+                    }
+                    library.createReadingPausForUser();
                     break;
                 case "6":
-
+                    library.addNewBookToLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "7":
-
+                    library.removeBookFromLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "8":
                     library.getAllLenders();
