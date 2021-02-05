@@ -13,6 +13,7 @@ public class Menu implements Serializable {
         String userName;
         String password;
         boolean isRunning = true;
+        User user;
 
         // To be removed when we have our own accounts.
         library.getUsers().forEach(System.out::println);
@@ -30,10 +31,11 @@ public class Menu implements Serializable {
                         (library.getUsers(), userName, password);
 
                 if (matchingUser.size() > 0) {
+                    user = matchingUser.get(0);
                     if (checkUserType(matchingUser)) {
-                        librarianMenu(library, userName);
+                        librarianMenu(library, user);
                     } else {
-                        lenderMenu(library, userName);
+                        lenderMenu(library, user);
                     }
                 } else System.out.println("Invalid name or password!");
             }
@@ -51,13 +53,13 @@ public class Menu implements Serializable {
     }
 
 
-    private void librarianMenu(Library library, String name) {
+    private void librarianMenu(Library library, User user) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", user.getName());
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
             System.out.println("2. See all lent books");
             System.out.println("3. See all late returns");
@@ -72,13 +74,19 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("\t\tAvailable books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    library.printoutTitle("\t\tLent books:");
+                    library.showAllLentBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "3":
-
+                    library.printoutTitle("\t\tLate books:");
+                    library.showAllLateBooks();
+                    library.createReadingPausForUser();
                     break;
                 case "4":
 
@@ -94,12 +102,15 @@ public class Menu implements Serializable {
                     break;
                 case "8":
                     library.getAllLenders();
+                    library.createReadingPausForUser();
                     break;
                 case "9":
-                    library.printUser(library.getInputFromUser("name"));
+                    library.printUser(library.getInputFromUser("Name: "));
+                    library.createReadingPausForUser();
                     break;
                 case "10":
                     library.removeUser();
+                    library.createReadingPausForUser();
                     break;
                 case "15":
                     isRunning = false;
@@ -112,13 +123,13 @@ public class Menu implements Serializable {
 
     }
 
-    private void lenderMenu(Library library, String name) {
+    private void lenderMenu(Library library, User user) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        System.out.printf("\nWelcome %s!\n", name);
+        System.out.printf("\nWelcome %s!", user.getName());
         while (isRunning) {
-            System.out.println("Make one choice:");
+            System.out.println("\nMake one choice:");
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
@@ -130,7 +141,9 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-
+                    library.printoutTitle("Available books:");
+                    library.showAvailableBooksInLibrary();
+                    library.createReadingPausForUser();
                     break;
                 case "2":
 
@@ -139,7 +152,8 @@ public class Menu implements Serializable {
 
                     break;
                 case "4":
-
+                    library.printMyBooks(user);
+                    library.createReadingPausForUser();
                     break;
                 case "5":
 

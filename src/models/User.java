@@ -11,6 +11,7 @@ public class User implements Serializable {
     private String userID;
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
+    Library library;
 
     public User(String name, String userID, boolean admin) {
         this.name = name;
@@ -40,14 +41,6 @@ public class User implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
-    }
-
-    public void printMyBooks(){
-        Stream<Book> printBook;
-        printBook = myBooks.stream();
-        printBook.forEach(book ->
-                System.out.println("--- " + book.getTitle() + ", written by " + book.getAuthor() + ". ISBN: " + book.getIsbn() + " --- \n"));
-
     }
 
     public List<Book> getMyBooks() {

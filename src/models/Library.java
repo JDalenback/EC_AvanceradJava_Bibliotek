@@ -33,8 +33,13 @@ public class Library implements Serializable {
                 watcher.handle(new LibraryEvent(event, data)));
     }
 
+
     public void showToUser(List<?> list) {
-        list.forEach(System.out::println);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println("\t\t"+(i+1)+".\t"+list.get(i));
+        } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
     }
 
     public void showToUser(Object object) {
@@ -53,6 +58,26 @@ public class Library implements Serializable {
 
         showToUser(availableBooks);
     }
+
+    public void showAllLentBooksInLibrary() {
+        List<Book> lentBooks = booksInLibrary
+                .stream()
+                .filter(book -> !(book.getBookTracker().isAvailable()))
+                .collect(Collectors.toList());
+
+        showToUser(lentBooks);
+    }
+
+    public void showAllLateBooks() {
+        long currentTime = System.currentTimeMillis();
+        List<Book> lateBooks = booksInLibrary
+                .stream()
+                .filter(book -> book.getBookTracker().getDateOfReturn()>0&&book.getBookTracker().getDateOfReturn()<currentTime)
+                .collect(Collectors.toList());
+
+        showToUser(lateBooks);
+    }
+
 
     public void showAllUsers() {
         showToUser(users);
@@ -176,8 +201,9 @@ public class Library implements Serializable {
 
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
-        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+        return timeNow -20;//+ 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
+
 
     public void lendingStatusDate(long lendingPeriodInMs) {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
@@ -186,13 +212,22 @@ public class Library implements Serializable {
         long timeNow = System.currentTimeMillis();
 
         if (timeNow > lendingPeriodInMs) {
-            System.out.println("\nYour book is late!\nReturn to the library immediately.");
+            System.out.println("\t-\tYour book is late! Return to the library immediately.");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            System.out.printf("\nYour loan period is almost over.\n" +
+            System.out.printf("\t-\tYour loan period is almost over.\n" +
                     "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
         } else {
-            System.out.printf("\nReturn the book latest %s.\n", dayPattern.format(returnDay));
+            System.out.printf("\t-\tReturn the book latest %s.\n", dayPattern.format(returnDay));
         }
+    }
+
+    public void printMyBooks(User user) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        for (int i = 0; i < user.getMyBooks().size(); i++) {
+            long temp = user.getMyBooks().get(i).getBookTracker().getDateOfReturn();
+            System.out.print("\t\t"+(i+1)+".\t"+user.getMyBooks().get(i).getTitle()+", written by "+ user.getMyBooks().get(i).getAuthor());
+            lendingStatusDate(temp);
+        } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void getAllLenders() {
@@ -250,93 +285,104 @@ public class Library implements Serializable {
     }
 
     public String getInputFromUser(String input) {
-            Scanner scan = new Scanner(System.in);
-            System.out.print(input + ": ");
-            String tempName = scan.nextLine();
-            return tempName;
-        }
+        Scanner scan = new Scanner(System.in);
+        System.out.print(input);
+        String tempName = scan.nextLine();
+        return tempName;
+    }
 
-        public void printUser (String userName){
-            Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
-            if (user.isPresent()) {
-                System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
-            } else
-                System.out.println("Sorry, user not found.");
-        }
-
-
-        public User getSpecificUser (String userID){
-            Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
-            if (user.isPresent())
-                return user.get();
-            else
-                return null;
-        }
-
-        // To be removed when save/read file is implemented.
-
-        public static void serializeObject (Object library, String fileName){
-            try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
-                objectOutStream.writeObject(library);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        public static Library deSerializeObject () {
-            Library library = null;
-            try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
-                library = (Library) objectInput.readObject();
-            } catch (FileNotFoundException e) {
-                // New Library Will be created if file is not found.
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return library;
-
-        }
+    public void printUser(String userName) {
+        Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
+        if (user.isPresent()) {
+            System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
+        } else
+            System.out.println("Sorry, user not found.");
+    }
 
 
-        public void populateMockupLibrary () {
-            readInBooks();
-            users.add(new User("John Doe", "12345", false));
-            users.add(new User("Molly", "23456", true));
-            users.add(new User("Andy", "34567", true));
-            users.add(new User("Misty", "45678", false));
+    public User getSpecificUser(String userID) {
+        Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
+        if (user.isPresent())
+            return user.get();
+        else
+            return null;
+    }
 
-            User user = getSpecificUser("12345");
-            Book book = getSpecificBook("Vita tänder");
-            lendBookToUser(user, book);
-        }
+    // To be removed when save/read file is implemented.
 
-
-        public List<User> getUsers () {
-            return users;
-        }
-
-        private void readInBooks () {
-            Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
-                    "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
-                    "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.");
-            Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
-                    "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
-                    " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
-                    "kärlek, sex och känslomässigt beroende.");
-            Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
-                    "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
-                    "egna minnen.");
-            Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
-                    " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
-                    "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.");
-            Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
-                    " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.");
-
-
-            booksInLibrary.add(book1);
-            booksInLibrary.add(book2);
-            booksInLibrary.add(book3);
-            booksInLibrary.add(book4);
-            booksInLibrary.add(book5);
+    public static void serializeObject(Object library, String fileName) {
+        try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
+            objectOutStream.writeObject(library);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    public static Library deSerializeObject() {
+        Library library = null;
+        try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
+            library = (Library) objectInput.readObject();
+        } catch (FileNotFoundException e) {
+            // New Library Will be created if file is not found.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return library;
+
+    }
+
+
+    public void populateMockupLibrary() {
+        readInBooks();
+        users.add(new User("John Doe", "12345", false));
+        users.add(new User("Molly", "23456", true));
+        users.add(new User("Andy", "34567", true));
+        users.add(new User("Misty", "45678", false));
+
+        User user = getSpecificUser("12345");
+        Book book = getSpecificBook("Vita tänder");
+        Book book2 = getSpecificBook("Återstoden av dagen");
+        lendBookToUser(user, book);
+        lendBookToUser(user, book2);
+    }
+
+    public void printoutTitle(String title) {
+        System.out.printf("\n%s\n\n", title);
+    }
+
+    public void createReadingPausForUser() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nPress enter to continue.");
+        String nothing = scanner.nextLine();
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    private void readInBooks() {
+        Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
+                "och Chalfens. De har olika bakgrund, religion och hudfärg men deras liv vävs samman i en oförutsägbar berättelse. " +
+                "Vänskapen mellan två omaka män, Archie Jones och Samad Iqba, går som en röd tråd genom romanen som spänner sig över ett halvt sekel.");
+        Book book2 = new Book("Norwegian Wood", "Haruki Murakami", "9789113089461", "Boken som gjorde Haruki Murakami till en superstjärna i litteraturen. " +
+                "När Toru av en slump träffar sin väns före detta flickvän Naoko blir han huvudlöst förälskad. Deras kärlek är lika delar öm, intensiv och omöjlig. Naoko är vacker men har" +
+                " ett bräckligt psyke och medan hon försvinner in i vårdhem skriver Toru brev, gör korta besök och väntar. Läs boken för skildringarna av relationer, " +
+                "kärlek, sex och känslomässigt beroende.");
+        Book book3 = new Book("Återstoden av dagen", "Kazuo Ishiguro", "9789174297126", "2017 års mottagare av Nobelpriset i litteratur Kazuo Ishiguro ligger bakom denna " +
+                "storsäljare. Butlern Stevens ger sig ut på sitt livs första semester i sin husbondes bil. Läsaren får följa med på en resa genom 1950-talets England såväl som genom Stevens " +
+                "egna minnen.");
+        Book book4 = new Book("Glaskupan", "Sylvia Plath", "9789174293418", "I en tävling vinner 19-åriga Esther en månads praktik på en tidskrift i New York. Hon har ett klarögt sätt" +
+                " att se på världen och gör träffande beskrivningar av det hon upplever och människorna hon möter. Esther för dock en ständig kamp mot sin psykiska ohälsa. Boken väcker många frågor om " +
+                "rollerna vi människor, och särskilt kvinnor, förväntas kliva in i — och vad som händer när vi misslyckas.");
+        Book book5 = new Book("Ett år av magiskt tänkande", "Joan Didion", "9789173893091", "År 2003 ligger Joan och maken Johns enda dotter på sjukhus, svävande mellan liv och död. En kväll drabbas" +
+                " John av en massiv hjärtinfarkt och dör. Ett år av magiskt tänkande är Joan Didions försök att förstå tiden som följde. En bok om sorg, mörker och liv skriven på ett rått och rakt sätt.");
+
+
+        booksInLibrary.add(book1);
+        booksInLibrary.add(book2);
+        booksInLibrary.add(book3);
+        booksInLibrary.add(book4);
+        booksInLibrary.add(book5);
+    }
+}

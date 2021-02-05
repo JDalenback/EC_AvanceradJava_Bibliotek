@@ -11,6 +11,7 @@ public class Program implements Serializable {
     public void start() {
         setLibrary(Library.deSerializeObject());
         library.populateMockupLibrary();
+
         menu.login(library);
     }
 
