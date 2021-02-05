@@ -10,6 +10,7 @@ public class Program implements Serializable {
     Menu menu = new Menu();
 
     public void start() {
+        setLibrary(Library.deSerializeObject());
         setLibrary(LibraryFileUtils.deSerializeObject());
 
         //library.populateMockupLibrary();

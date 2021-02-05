@@ -3,6 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class User implements Serializable {
 
@@ -10,6 +11,7 @@ public class User implements Serializable {
     private String userID;
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
+    Library library;
 
     public User(String name, String userID, boolean admin) {
         this.name = name;
