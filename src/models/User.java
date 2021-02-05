@@ -17,6 +17,7 @@ public class User implements Serializable {
         this.admin = admin;
     }
 
+
     public String getName() {
         return name;
     }
@@ -55,7 +56,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "User{ " +
                 "name='" + name + '\'' +
                 ", userID='" + userID + '\'' +
                 ", admin=" + admin +
