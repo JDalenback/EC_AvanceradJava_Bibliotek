@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -223,6 +221,7 @@ public class Library implements Serializable {
         }
     }
 
+    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
     public void getAllLenders() {
         Stream<User> tempTest;
         tempTest = users
@@ -238,7 +237,7 @@ public class Library implements Serializable {
                 .findFirst().orElse(-1);
     }
 
-    //create new visitor and put it in list of users
+
     public void addUser() {
         String name;
         String userID;
