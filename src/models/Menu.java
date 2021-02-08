@@ -72,17 +72,17 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-                    library.printoutTitle("\t\tAvailable books:");
+                    library.printoutTitle("Available books:");
                     library.showAvailableBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "2":
-                    library.printoutTitle("\t\tLent books:");
+                    library.printoutTitle("Lent books:");
                     library.showAllLentBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "3":
-                    library.printoutTitle("\t\tLate books:");
+                    library.printoutTitle("Late books:");
                     library.showAllLateBooks();
                     library.createReadingPausForUser();
                     break;
@@ -164,11 +164,11 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "5":
-                    library.showToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Title: ")));
                     library.createReadingPausForUser();
                     break;
                 case "6":
-                    library.showToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Author: ")));
                     library.createReadingPausForUser();
                     break;
                 case "7":
@@ -215,9 +215,7 @@ public class Menu implements Serializable {
         String tempTitle;
         Book book;
         library.printoutTitle("Return a book:");
-        user.getMyBooks().stream()
-                .map(Book::getTitle)
-                .forEach(System.out::println);
+        user.printMyBooks();
         tempTitle = library.getInputFromUser("Title of book: ");
         book = library.getSpecificBook(tempTitle);
         if (book != null) {

@@ -387,7 +387,7 @@ public class Library implements Serializable {
     }
 
     public void printoutTitle(String title) {
-        System.out.printf("\n%s\n\n", title);
+        System.out.printf("\n\t\t%s\n", title);
     }
 
     public void createReadingPausForUser() {
