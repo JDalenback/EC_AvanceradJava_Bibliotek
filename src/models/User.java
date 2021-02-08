@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class User implements Serializable {
 
@@ -13,6 +14,7 @@ public class User implements Serializable {
     private List<Book> myBooks = new ArrayList<>();
     @Serial
     private static final long serialVersionUID = 1L;
+    Library library;
 
     public User(String name, String userID, boolean admin) {
         this.name = name;
