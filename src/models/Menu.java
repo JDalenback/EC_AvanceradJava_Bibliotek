@@ -54,8 +54,6 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        String tempTitle;
-        Book book;
         System.out.printf("\nWelcome %s!", user.getName());
         while (isRunning) {
             System.out.println("\nMake one choice:");
@@ -68,7 +66,8 @@ public class Menu implements Serializable {
             System.out.println("7. Remove book from library.");
             System.out.println("8. See all lenders.");
             System.out.println("9. See lender by name.");
-            System.out.println("10. Remove user from library");
+            System.out.println("10. Add user to library");
+            System.out.println("11. Remove user from library");
             System.out.println("15. Logg out");
             chose = scanner.nextLine();
             switch (chose) {
@@ -88,33 +87,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "4":
-                    library.printoutTitle("Lend a book:");
-                    library.showAvailableBooksInLibrary();
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.lendBookToUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been lent to you.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, " +
-                                "no book has benn lent to you");
-                    }
-                    library.createReadingPausForUser();
+                    lendABook(library, user);
                     break;
                 case "5":
-                    library.printoutTitle("Return a book:");
-                    user.getMyBooks().stream()
-                            .map(Book::getTitle)
-                            .forEach(System.out::println);
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.returnBookFromUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been returned.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
-                    }
-                    library.createReadingPausForUser();
+                    returnABook(library, user);
                     break;
                 case "6":
                     library.addNewBookToLibrary();
@@ -133,6 +109,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "10":
+                    library.addUser();
+                    library.createReadingPausForUser();
+                    break;
+                case "11":
                     library.removeUser();
                     library.createReadingPausForUser();
                     break;
@@ -170,20 +150,22 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    lendABook(library, user);
                     break;
                 case "3":
-
+                    returnABook(library, user);
                     break;
                 case "4":
                     library.printMyBooks(user);
                     library.createReadingPausForUser();
                     break;
                 case "5":
-
+                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
+                    library.createReadingPausForUser();
                     break;
                 case "6":
-
+                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
+                    library.createReadingPausForUser();
                     break;
                 case "7":
 
@@ -199,5 +181,40 @@ public class Menu implements Serializable {
             }
 
         }
+    }
+
+    private void lendABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Lend a book:");
+        library.showAvailableBooksInLibrary();
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.lendBookToUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been lent to you.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, " +
+                    "no book has benn lent to you");
+        }
+        library.createReadingPausForUser();
+    }
+
+    private void returnABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Return a book:");
+        user.getMyBooks().stream()
+                .map(Book::getTitle)
+                .forEach(System.out::println);
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.returnBookFromUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been returned.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
+        }
+        library.createReadingPausForUser();
     }
 }
