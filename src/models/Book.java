@@ -8,6 +8,7 @@ public class Book implements Serializable {
     private String isbn;
     private String description;
     private BookTracker bookTracker = new BookTracker();
+    private static final long serialVersionUID = 1L;
 
     public Book(String title, String author, String isbn, String description) {
         this.title = title;

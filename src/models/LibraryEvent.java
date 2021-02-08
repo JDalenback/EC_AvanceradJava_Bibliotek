@@ -3,6 +3,7 @@ package models;
 import java.io.Serializable;
 
 public class LibraryEvent implements Serializable {
+    private static final long serialVersionUID = 1L;
     public String getEvent() {
         return event;
     }

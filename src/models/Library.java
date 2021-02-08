@@ -2,6 +2,7 @@ package models;
 
 import Utils.LibraryFileUtils;
 
+//import java.io.Serializable;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
@@ -13,6 +14,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static Library libraryInstance = null;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
@@ -21,6 +23,42 @@ public class Library implements Serializable {
     private Library() {
         initializeWatchers();
     }
+
+    /**
+     * Sortera boklistan efter titel eller författare
+     */
+
+    public void sortByTitle() {
+        List<String> booksByTitle = new ArrayList<>();
+
+        for (Object item : booksInLibrary) {
+            String partString = item.toString().substring(7);
+            String[] getTitle = partString.split("Author");
+            booksByTitle.add(getTitle[0]);
+        }
+        Collections.sort(booksByTitle);
+        for (String title : booksByTitle) {
+            System.out.println(title);
+        }
+    }
+
+
+    public void sortByAuthor() {
+        List<String> booksByAuthor = new ArrayList<>();
+
+        for (Object item : booksInLibrary) {
+            String partString = item.toString().substring(7);
+            String[] splitListObject = partString.split("Author");
+            String[] authorName = splitListObject[1].split("ISBN");
+            String author = authorName[0];
+            booksByAuthor.add(author.substring(1));
+        }
+        Collections.sort(booksByAuthor);
+        for (String title : booksByAuthor) {
+            System.out.println(title);
+        }
+    }
+
 
     private void initializeWatchers() {
         watch("insert", event ->
@@ -34,20 +72,6 @@ public class Library implements Serializable {
 
         watch("returnBook", event ->
                 LibraryFileUtils.serializeObject(this));
-    }
-
-    public void checkIfUserNameExists(Object name) {
-        String[] nameSplit = name.toString().split("\'");
-        List<Object> tempName = new ArrayList<>(users);
-        for (Object item : tempName) {
-            if (item.toString().contains(nameSplit[1])) {
-                try {
-                    throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     public void watch(String event, LibraryWatcher watcher) {
@@ -268,6 +292,7 @@ public class Library implements Serializable {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
     public void getAllLenders() {
         Stream<User> tempTest;
         tempTest = users
@@ -283,29 +308,58 @@ public class Library implements Serializable {
                 .findFirst().orElse(-1);
     }
 
-    //create new visitor and put it in list of users
+
     public void addUser() {
         String name;
         String userID;
         String admin;
         boolean adminBoolean = false;
+        boolean userAdd = false;
+        while (!userAdd) {
+            Scanner scan = new Scanner(System.in);
 
-        Scanner scan = new Scanner(System.in);
+            System.out.print("---Create a new USER---\n\nName: ");
+            name = scan.nextLine();
+            System.out.print("UserID: ");
+            userID = scan.nextLine();
+            System.out.println("Admin? Enter \"yes\" or \"no\"");
+            admin = scan.nextLine();
 
-        System.out.print("\n---Create a new USER---\n\nName: ");
-        name = scan.nextLine();
-        userID = makeValidUserID();
-        System.out.println("Admin? Enter \"yes\" or \"no\"");
-        admin = scan.nextLine();
 
-        if (admin.equalsIgnoreCase("yes"))
-            adminBoolean = true;
+            if (admin.equalsIgnoreCase("yes"))
+                adminBoolean = true;
 
-        User newUser = new User(name, userID, adminBoolean);
-        users.add(newUser);
-        System.out.println("\n" + name + " is now added to the system \n");
+            if (!checkIfUserNameExists(new User(name, userID, adminBoolean))) {
+                User newUser = new User(name, userID, adminBoolean);
+                users.add(newUser);
+                System.out.println("\n" + name + " is now added to the system \n");
+                callWatchers("insert", newUser);
+                userAdd = true;
+            } else {
+                System.out.println("Username already exists. You have to choose another");
+            }
+        }
 
-        callWatchers("insert", newUser);
+    }
+
+    public boolean checkIfUserNameExists(Object name) {
+        Boolean userExists = false;
+        String[] nameSplit = name.toString().split("\'");
+        List<Object> tempName = new ArrayList<>(users);
+        for (Object item : tempName) {
+            try {
+                if (item.toString().contains(nameSplit[1])) {
+                    userExists = true;
+                    //throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
+                }
+            } catch (NullPointerException ignored) {
+
+            } catch (Exception e) {
+                //e.printStackTrace();
+                System.out.println(e);
+            }
+        }
+        return userExists;
     }
 
     public String makeValidUserID() {

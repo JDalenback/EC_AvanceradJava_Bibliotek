@@ -3,7 +3,6 @@ package models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class User implements Serializable {
 
@@ -11,6 +10,7 @@ public class User implements Serializable {
     private String userID;
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
+    private static final long serialVersionUID = 1L;
     Library library;
 
     public User(String name, String userID, boolean admin) {
@@ -42,6 +42,17 @@ public class User implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public int numberOfBorrowedBooks(){
+        return myBooks.size();
+    }
+
+    public Long numberOfLateBooks(){
+        return  myBooks
+                .stream()
+                .filter(userBook -> userBook.getBookTracker().getDateOfReturn() < System.currentTimeMillis())
+                .count();
     }
 
     public List<Book> getMyBooks() {
