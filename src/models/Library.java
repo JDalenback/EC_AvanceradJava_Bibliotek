@@ -243,8 +243,7 @@ public class Library implements Serializable {
             System.out.printf("\t-\tReturn the book latest %s.\n", dayPattern.format(returnDay));
         }
     }
-    
-    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
+
     public void printMyBooks(User user) {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
         for (int i = 0; i < user.getMyBooks().size(); i++) {
@@ -254,6 +253,7 @@ public class Library implements Serializable {
         } System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
     public void getAllLenders() {
         Stream<User> tempTest;
         tempTest = users

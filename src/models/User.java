@@ -44,6 +44,17 @@ public class User implements Serializable {
         this.admin = admin;
     }
 
+    public int numberOfBorrowedBooks(){
+        return myBooks.size();
+    }
+
+    public Long numberOfLateBooks(){
+        return  myBooks
+                .stream()
+                .filter(userBook -> userBook.getBookTracker().getDateOfReturn() < System.currentTimeMillis())
+                .count();
+    }
+
     public List<Book> getMyBooks() {
         return myBooks;
     }

@@ -57,11 +57,23 @@ public class Menu implements Serializable {
         String tempTitle;
         Book book;
         System.out.printf("\nWelcome %s!", user.getName());
+
         while (isRunning) {
             System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
-            System.out.println("2. See all lent books");
-            System.out.println("3. See all late returns");
+
+            int numberOfBooksLent = user.numberOfBorrowedBooks();
+            if(numberOfBooksLent == 0)
+                System.out.println("2. See all lent books");
+            else
+                System.out.printf("2. See all lent books (%d)\n", numberOfBooksLent);
+
+            long lateBooks = user.numberOfLateBooks();
+            if(lateBooks == 0)
+                System.out.println("3. See all late returns");
+            else
+                System.out.printf("3. See all late returns (%d)\n", lateBooks);
+
             System.out.println("4. Lend a book");
             System.out.println("5. Return book");
             System.out.println("6. Add a new book to the library.");
