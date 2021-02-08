@@ -94,6 +94,17 @@ public class Library implements Serializable {
 
     }
 
+    //Almost the same method as "showToUser" but with nicer print if it's only one object
+    public void showOneObjectToUser(Object object) {
+
+        if (object != null) {
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t" + object);
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        }
+        else System.out.println("\t\tDoesn't exist, please try again. ");
+    }
+
 
     public void showToUser(Object object) {
         System.out.println(object);

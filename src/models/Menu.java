@@ -163,10 +163,12 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "5":
-
+                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
+                    library.createReadingPausForUser();
                     break;
                 case "6":
-
+                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
+                    library.createReadingPausForUser();
                     break;
                 case "7":
 
