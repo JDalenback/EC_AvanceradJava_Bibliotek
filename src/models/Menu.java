@@ -6,8 +6,6 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
-
-
     public void login(Library library) {
         Scanner scanner = new Scanner(System.in);
         String userName;
@@ -54,33 +52,21 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        String tempTitle;
-        Book book;
         System.out.printf("\nWelcome %s!", user.getName());
 
         while (isRunning) {
             System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
-
-            int numberOfBooksLent = user.numberOfBorrowedBooks();
-            if(numberOfBooksLent == 0)
-                System.out.println("2. See all lent books");
-            else
-                System.out.printf("2. See all lent books (%d)\n", numberOfBooksLent);
-
-            long lateBooks = user.numberOfLateBooks();
-            if(lateBooks == 0)
-                System.out.println("3. See all late returns");
-            else
-                System.out.printf("3. See all late returns (%d)\n", lateBooks);
-
+            System.out.println("2. See all lent books");
+            System.out.println("3. See all late returns");
             System.out.println("4. Lend a book");
             System.out.println("5. Return book");
             System.out.println("6. Add a new book to the library.");
             System.out.println("7. Remove book from library.");
             System.out.println("8. See all lenders.");
             System.out.println("9. See lender by name.");
-            System.out.println("10. Remove user from library");
+            System.out.println("10. Add user to library");
+            System.out.println("11. Remove user from library");
             System.out.println("15. Logg out");
             chose = scanner.nextLine();
             switch (chose) {
@@ -100,33 +86,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "4":
-                    library.printoutTitle("Lend a book:");
-                    library.showAvailableBooksInLibrary();
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.lendBookToUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been lent to you.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, " +
-                                "no book has benn lent to you");
-                    }
-                    library.createReadingPausForUser();
+                    lendABook(library, user);
                     break;
                 case "5":
-                    library.printoutTitle("Return a book:");
-                    user.getMyBooks().stream()
-                            .map(Book::getTitle)
-                            .forEach(System.out::println);
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.returnBookFromUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been returned.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
-                    }
-                    library.createReadingPausForUser();
+                    returnABook(library, user);
                     break;
                 case "6":
                     library.addNewBookToLibrary();
@@ -145,6 +108,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "10":
+                    library.addUser();
+                    library.createReadingPausForUser();
+                    break;
+                case "11":
                     library.removeUser();
                     library.createReadingPausForUser();
                     break;
@@ -169,11 +136,13 @@ public class Menu implements Serializable {
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
-            System.out.println("4. See list of books that you haven't returned.");
+            menuOptionListOfBorrowedBooks(user);
+
             System.out.println("5. Search book on title.");
             System.out.println("6. Search book on Author.");
             System.out.println("7. Read more about a book.");
             System.out.println("9. Logg out");
+
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
@@ -182,10 +151,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    lendABook(library, user);
                     break;
                 case "3":
-
+                    returnABook(library, user);
                     break;
                 case "4":
                     library.printMyBooks(user);
@@ -209,7 +178,52 @@ public class Menu implements Serializable {
                 default:
                     System.out.println("Invalid selection!");
             }
-
         }
+    }
+
+    private void menuOptionListOfBorrowedBooks(User user){
+        int numberOfBooksLent = user.numberOfBorrowedBooks();
+        if(numberOfBooksLent == 0)
+            System.out.println("4. See list of books that you haven't returned.");
+        else
+            if(user.numberOfLateBooks() > 0)
+                System.out.printf("4. See list of books that you haven't returned." + TextColors.ANSI_RED+ "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
+            else
+                System.out.printf("4. See list of books that you haven't returned. (%d)\n", numberOfBooksLent);
+    }
+
+    private void lendABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Lend a book:");
+        library.showAvailableBooksInLibrary();
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.lendBookToUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been lent to you.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, " +
+                    "no book has benn lent to you");
+        }
+        library.createReadingPausForUser();
+    }
+
+    private void returnABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Return a book:");
+        user.getMyBooks().stream()
+                .map(Book::getTitle)
+                .forEach(System.out::println);
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.returnBookFromUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been returned.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
+        }
+        library.createReadingPausForUser();
     }
 }
