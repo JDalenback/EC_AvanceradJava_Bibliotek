@@ -181,15 +181,14 @@ public class Menu implements Serializable {
         }
     }
 
-    private void menuOptionListOfBorrowedBooks(User user){
+    private void menuOptionListOfBorrowedBooks(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
-        if(numberOfBooksLent == 0)
+        if (numberOfBooksLent == 0)
             System.out.println("4. See list of books that you haven't returned.");
+        else if (user.numberOfLateBooks() > 0)
+            System.out.printf("4. See list of books that you haven't returned." + TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
         else
-            if(user.numberOfLateBooks() > 0)
-                System.out.printf("4. See list of books that you haven't returned." + TextColors.ANSI_RED+ "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
-            else
-                System.out.printf("4. See list of books that you haven't returned. (%d)\n", numberOfBooksLent);
+            System.out.printf("4. See list of books that you haven't returned.(%d)\n", numberOfBooksLent);
     }
 
     private void lendABook(Library library, User user) {
