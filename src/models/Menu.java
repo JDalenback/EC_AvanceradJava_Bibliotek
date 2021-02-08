@@ -54,8 +54,6 @@ public class Menu implements Serializable {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String chose;
-        String tempTitle;
-        Book book;
         System.out.printf("\nWelcome %s!", user.getName());
         while (isRunning) {
             System.out.println("\nMake one choice:");
@@ -89,33 +87,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "4":
-                    library.printoutTitle("Lend a book:");
-                    library.showAvailableBooksInLibrary();
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.lendBookToUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been lent to you.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, " +
-                                "no book has benn lent to you");
-                    }
-                    library.createReadingPausForUser();
+                    lendABook(library, user);
                     break;
                 case "5":
-                    library.printoutTitle("Return a book:");
-                    user.getMyBooks().stream()
-                            .map(Book::getTitle)
-                            .forEach(System.out::println);
-                    tempTitle = library.getInputFromUser("Title of book: ");
-                    book = library.getSpecificBook(tempTitle);
-                    if (book != null) {
-                        library.returnBookFromUser(user, book);
-                        library.printoutTitle(book.getTitle() + " has been returned.");
-                    } else {
-                        library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
-                    }
-                    library.createReadingPausForUser();
+                    returnABook(library, user);
                     break;
                 case "6":
                     library.addNewBookToLibrary();
@@ -175,10 +150,10 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "2":
-
+                    lendABook(library, user);
                     break;
                 case "3":
-
+                    returnABook(library, user);
                     break;
                 case "4":
                     library.printMyBooks(user);
@@ -204,5 +179,40 @@ public class Menu implements Serializable {
             }
 
         }
+    }
+
+    private void lendABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Lend a book:");
+        library.showAvailableBooksInLibrary();
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.lendBookToUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been lent to you.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, " +
+                    "no book has benn lent to you");
+        }
+        library.createReadingPausForUser();
+    }
+
+    private void returnABook(Library library, User user) {
+        String tempTitle;
+        Book book;
+        library.printoutTitle("Return a book:");
+        user.getMyBooks().stream()
+                .map(Book::getTitle)
+                .forEach(System.out::println);
+        tempTitle = library.getInputFromUser("Title of book: ");
+        book = library.getSpecificBook(tempTitle);
+        if (book != null) {
+            library.returnBookFromUser(user, book);
+            library.printoutTitle(book.getTitle() + " has been returned.");
+        } else {
+            library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
+        }
+        library.createReadingPausForUser();
     }
 }
