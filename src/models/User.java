@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ public class User implements Serializable {
     private String userID;
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public User(String name, String userID, boolean admin) {
         this.name = name;

@@ -1,12 +1,11 @@
 package Utils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 public class LibraryFileUtils {
     private static String filePath = "src/library.ser";
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public LibraryFileUtils() {
     }
