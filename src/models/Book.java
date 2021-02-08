@@ -1,6 +1,5 @@
 package models;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 public class Book implements Serializable {
@@ -9,7 +8,6 @@ public class Book implements Serializable {
     private String isbn;
     private String description;
     private BookTracker bookTracker = new BookTracker();
-    @Serial
     private static final long serialVersionUID = 1L;
 
     public Book(String title, String author, String isbn, String description) {

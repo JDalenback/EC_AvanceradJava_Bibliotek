@@ -1,16 +1,12 @@
 package models;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
-    @Serial
     private static final long serialVersionUID = 1L;
-
-
     public void login(Library library) {
         Scanner scanner = new Scanner(System.in);
         String userName;
@@ -58,6 +54,7 @@ public class Menu implements Serializable {
         boolean isRunning = true;
         String chose;
         System.out.printf("\nWelcome %s!", user.getName());
+
         while (isRunning) {
             System.out.println("\nMake one choice:");
             System.out.println("1. See available books");
@@ -125,10 +122,9 @@ public class Menu implements Serializable {
                 default:
                     System.out.println("Invalid selection!");
             }
-
         }
-
     }
+
 
     private void lenderMenu(Library library, User user) {
         Scanner scanner = new Scanner(System.in);
@@ -140,11 +136,15 @@ public class Menu implements Serializable {
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
-            System.out.println("4. See list of books that you haven't returned.");
+
+            System.out.print("4. See list of books that you haven't returned.");
+            numberOfBooksUserHasBorrowed(user);
+
             System.out.println("5. Search book on title.");
             System.out.println("6. Search book on Author.");
             System.out.println("7. Read more about a book.");
             System.out.println("9. Logg out");
+
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
@@ -180,8 +180,15 @@ public class Menu implements Serializable {
                 default:
                     System.out.println("Invalid selection!");
             }
-
         }
+    }
+
+    private void numberOfBooksUserHasBorrowed(User user) {
+        int numberOfBooksLent = user.numberOfBorrowedBooks();
+        if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
+                System.out.printf(TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
+            else
+                System.out.printf("(%d)\n", numberOfBooksLent);
     }
 
     private void lendABook(Library library, User user) {

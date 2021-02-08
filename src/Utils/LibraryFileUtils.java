@@ -4,8 +4,6 @@ import java.io.*;
 
 public class LibraryFileUtils {
     private static String filePath = "src/library.ser";
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     public LibraryFileUtils() {
     }

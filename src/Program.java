@@ -1,27 +1,16 @@
 import Utils.LibraryFileUtils;
 import models.Library;
 import models.Menu;
-import models.User;
-
-import java.io.Serial;
 import java.io.Serializable;
 
 public class Program implements Serializable {
     private Library library = null;
     Menu menu = new Menu();
-    @Serial
     private static final long serialVersionUID = 1L;
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-
-
         //library.populateMockupLibrary();
-        library.populateMockupLibrary();
-        //library.checkIfUserNameExists(new User("Molly", "12345", false));
-        library.addUser();
-        //Library.serializeObject(library, "src/models/books.ser");
-        //menu.login();
         menu.login(library);
     }
 

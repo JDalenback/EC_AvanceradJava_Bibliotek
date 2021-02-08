@@ -2,8 +2,7 @@ package models;
 
 import Utils.LibraryFileUtils;
 
-import java.io.Serial;
-import java.io.Serializable;
+//import java.io.Serializable;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
@@ -15,12 +14,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static Library libraryInstance = null;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     private Library() {
         initializeWatchers();
@@ -42,8 +40,6 @@ public class Library implements Serializable {
         for (String title : booksByTitle) {
             System.out.println(title);
         }
-
-
     }
 
 
@@ -285,6 +281,7 @@ public class Library implements Serializable {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
     public void getAllLenders() {
         Stream<User> tempTest;
         tempTest = users
@@ -300,7 +297,7 @@ public class Library implements Serializable {
                 .findFirst().orElse(-1);
     }
 
-    //create new visitor and put it in list of users
+
     public void addUser() {
         String name;
         String userID;
