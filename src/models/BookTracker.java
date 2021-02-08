@@ -6,6 +6,7 @@ public class BookTracker implements Serializable {
     private boolean isAvailable;
     private long dateOfReturn;
     private User userThatBorrowed;
+    private static final long serialVersionUID = 1L;
 
     public BookTracker() {
         this.isAvailable = true;

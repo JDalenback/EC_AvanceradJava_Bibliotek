@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
+    private static final long serialVersionUID = 1L;
     public void login(Library library) {
         Scanner scanner = new Scanner(System.in);
         String userName;
@@ -137,7 +138,7 @@ public class Menu implements Serializable {
             System.out.println("3. Return book.");
 
             System.out.print("4. See list of books that you haven't returned.");
-            d(user);
+            numberOfBooksUserHasBorrowed(user);
 
             System.out.println("5. Search book on title.");
             System.out.println("6. Search book on Author.");
@@ -182,7 +183,7 @@ public class Menu implements Serializable {
         }
     }
 
-    private void d(User user) {
+    private void numberOfBooksUserHasBorrowed(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
         if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
                 System.out.printf(TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
