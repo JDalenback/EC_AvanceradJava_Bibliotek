@@ -72,17 +72,17 @@ public class Menu implements Serializable {
             chose = scanner.nextLine();
             switch (chose) {
                 case "1":
-                    library.printoutTitle("\t\tAvailable books:");
+                    library.printoutTitle("Available books:");
                     library.showAvailableBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "2":
-                    library.printoutTitle("\t\tLent books:");
+                    library.printoutTitle("Lent books:");
                     library.showAllLentBooksInLibrary();
                     library.createReadingPausForUser();
                     break;
                 case "3":
-                    library.printoutTitle("\t\tLate books:");
+                    library.printoutTitle("Late books:");
                     library.showAllLateBooks();
                     library.createReadingPausForUser();
                     break;
@@ -101,7 +101,7 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "8":
-                    library.getAllLenders();
+                    library.getAllNoneAdminUsers();
                     library.createReadingPausForUser();
                     break;
                 case "9":
@@ -113,7 +113,8 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "11":
-                    library.removeUser();
+                    String userName = library.getInputFromUser("Name of user to be removed: ");
+                    library.removeUser(library.getSpecificUser(userName));
                     library.createReadingPausForUser();
                     break;
                 case "15":
@@ -159,15 +160,15 @@ public class Menu implements Serializable {
                     returnABook(library, user);
                     break;
                 case "4":
-                    library.printMyBooks(user);
+                    user.printMyBooks();
                     library.createReadingPausForUser();
                     break;
                 case "5":
-                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Title: ")));
                     library.createReadingPausForUser();
                     break;
                 case "6":
-                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Author: ")));
                     library.createReadingPausForUser();
                     break;
                 case "7":
@@ -188,9 +189,9 @@ public class Menu implements Serializable {
     private void numberOfBooksUserHasBorrowed(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
         if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
-                System.out.printf(TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
+                Message.showMessage(String.format("(%d)", numberOfBooksLent), "red");
             else
-                System.out.printf("(%d)\n", numberOfBooksLent);
+                Message.showMessage(String.format("(%d)", numberOfBooksLent), "default");
     }
 
     private void lendABook(Library library, User user) {
@@ -214,9 +215,7 @@ public class Menu implements Serializable {
         String tempTitle;
         Book book;
         library.printoutTitle("Return a book:");
-        user.getMyBooks().stream()
-                .map(Book::getTitle)
-                .forEach(System.out::println);
+        user.printMyBooks();
         tempTitle = library.getInputFromUser("Title of book: ");
         book = library.getSpecificBook(tempTitle);
         if (book != null) {

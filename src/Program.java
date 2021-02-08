@@ -10,16 +10,10 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-        library.populateMockupLibrary();
+        //library.populateMockupLibrary();
+        library.showAllUsers();
+
         menu.login(library);
-    }
-
-    private void saveLibraryToFile() {
-        LibraryFileUtils.serializeObject(library);
-    }
-
-    private void loadLibraryFroFile() {
-        setLibrary(LibraryFileUtils.deSerializeObject());
     }
 
     private void setLibrary(Object object) {
@@ -29,4 +23,6 @@ public class Program implements Serializable {
         else
             this.library = Library.getLibraryInstance();
     }
+
+
 }
