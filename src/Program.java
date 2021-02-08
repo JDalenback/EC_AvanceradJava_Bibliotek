@@ -10,16 +10,8 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-        library.populateMockupLibrary();
-        menu.login(library);
-    }
-
-    private void saveLibraryToFile() {
-        LibraryFileUtils.serializeObject(library);
-    }
-
-    private void loadLibraryFroFile() {
-        setLibrary(LibraryFileUtils.deSerializeObject());
+        //library.populateMockupLibrary();
+        //menu.login(library);
     }
 
     private void setLibrary(Object object) {

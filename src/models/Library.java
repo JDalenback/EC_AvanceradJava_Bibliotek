@@ -94,15 +94,13 @@ public class Library implements Serializable {
 
     }
 
-    //Almost the same method as "showToUser" but with nicer print if it's only one object
     public void showOneObjectToUser(Object object) {
 
         if (object != null) {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
             System.out.println("\t\t" + object);
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        }
-        else System.out.println("\t\tDoesn't exist, please try again. ");
+        } else System.out.println("\t\tDoesn't exist, please try again. ");
     }
 
 
@@ -191,13 +189,17 @@ public class Library implements Serializable {
 
     public void lendBookToUser(User user, Book book) {
 
-        BookTracker bookTracker = book.getBookTracker();
-        bookTracker.setAvailable(false);
-        bookTracker.setUserThatBorrowed(user);
-        bookTracker.setDateOfReturn(setBookReturnTime());
-        user.addBookToMyBooks(book);
+        if(isBookAvailable(book)){
+            BookTracker bookTracker = book.getBookTracker();
+            bookTracker.setAvailable(false);
+            bookTracker.setUserThatBorrowed(user);
+            bookTracker.setDateOfReturn(setBookReturnTime());
+            user.addBookToMyBooks(book);
 
-        callWatchers("lendBook", book);
+            callWatchers("lendBook", book);
+        } else {
+            System.out.println("Book is not available.");
+        }
     }
 
     public void returnBookFromUser(User user, Book book) {
@@ -217,7 +219,6 @@ public class Library implements Serializable {
                 .findFirst().orElse(-1);
     }
 
-    // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nRemove book.");
@@ -234,7 +235,6 @@ public class Library implements Serializable {
 
     public void addNewBookToLibrary() {
         Scanner scanner = new Scanner(System.in);
-        // BookTracker bookTracker = new BookTracker();
         String bookTitle;
         String author;
         String isbn;
@@ -257,14 +257,10 @@ public class Library implements Serializable {
         callWatchers("insert", newBook);
     }
 
-//create new users and put them in list of allUsers
-
-
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
         return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
-
 
     public void lendingStatusDate(long lendingPeriodInMs) {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
@@ -307,7 +303,6 @@ public class Library implements Serializable {
                 .filter(i -> users.get(i).getUserID().equalsIgnoreCase(inputID))
                 .findFirst().orElse(-1);
     }
-
 
     public void addUser() {
         String name;
@@ -417,55 +412,12 @@ public class Library implements Serializable {
             System.out.println("Sorry, user not found.");
     }
 
-    // To be removed when save/read file is implemented.
-
-
     public User getSpecificUser(String userID) {
         Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
         if (user.isPresent())
             return user.get();
         else
             return null;
-    }
-
-    // To be removed when save/read file is implemented.
-
-    public static void serializeObject(Object library, String fileName) {
-        try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
-            objectOutStream.writeObject(library);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Library deSerializeObject() {
-        Library library = null;
-        try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
-            library = (Library) objectInput.readObject();
-        } catch (FileNotFoundException e) {
-            // New Library Will be created if file is not found.
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return library;
-
-    }
-
-
-    public void populateMockupLibrary() {
-        readInBooks();
-        users.add(new User("John Doe", "12345", false));
-        users.add(new User("Molly", "23456", true));
-        users.add(new User("Andy", "34567", true));
-        users.add(new User("Misty", "45678", false));
-
-        User user = getSpecificUser("12345");
-        Book book = getSpecificBook("Vita tänder");
-        Book book2 = getSpecificBook("Återstoden av dagen");
-        lendBookToUser(user, book);
-        lendBookToUser(user, book2);
-        lendBookToUser(user, book);
     }
 
     public void printoutTitle(String title) {
@@ -490,7 +442,20 @@ public class Library implements Serializable {
     }
 
 
-    // Test method. Use to populate library with a few books and users. To be removed!
+    public void populateMockupLibrary() {
+        readInBooks();
+        users.add(new User("John Doe", "12345", false));
+        users.add(new User("Molly", "23456", true));
+        users.add(new User("Andy", "34567", true));
+        users.add(new User("Misty", "45678", false));
+
+        User user = getSpecificUser("12345");
+        Book book = getSpecificBook("Vita tänder");
+        Book book2 = getSpecificBook("Återstoden av dagen");
+        lendBookToUser(user, book);
+        lendBookToUser(user, book2);
+        lendBookToUser(user, book);
+    }
 
     private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +
