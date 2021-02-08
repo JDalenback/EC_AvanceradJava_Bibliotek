@@ -101,7 +101,7 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "8":
-                    library.getAllLenders();
+                    library.getAllNoneAdminUsers();
                     library.createReadingPausForUser();
                     break;
                 case "9":
@@ -113,7 +113,8 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "11":
-                    library.removeUser();
+                    String userName = library.getInputFromUser("Name of user to be removed: ");
+                    library.removeUser(library.getSpecificUser(userName));
                     library.createReadingPausForUser();
                     break;
                 case "15":
@@ -159,15 +160,15 @@ public class Menu implements Serializable {
                     returnABook(library, user);
                     break;
                 case "4":
-                    library.printMyBooks(user);
+                    user.printMyBooks();
                     library.createReadingPausForUser();
                     break;
                 case "5":
-                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("\t\tTitle: ")));
                     library.createReadingPausForUser();
                     break;
                 case "6":
-                    library.showOneObjectToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
+                    library.showToUser(library.getSpecificBook(library.getInputFromUser("\t\tAuthor: ")));
                     library.createReadingPausForUser();
                     break;
                 case "7":
@@ -188,9 +189,9 @@ public class Menu implements Serializable {
     private void numberOfBooksUserHasBorrowed(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
         if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
-                System.out.printf(TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
+                Message.showMessage(String.format("(%d)", numberOfBooksLent), "red");
             else
-                System.out.printf("(%d)\n", numberOfBooksLent);
+                Message.showMessage(String.format("(%d)", numberOfBooksLent), "default");
     }
 
     private void lendABook(Library library, User user) {

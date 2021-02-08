@@ -2,7 +2,6 @@ package models;
 
 import Utils.LibraryFileUtils;
 
-//import java.io.Serializable;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
@@ -27,7 +26,6 @@ public class Library implements Serializable {
     /**
      * Sortera boklistan efter titel eller författare
      */
-
     public void sortByTitle() {
         List<String> booksByTitle = new ArrayList<>();
 
@@ -91,11 +89,9 @@ public class Library implements Serializable {
             System.out.println("\t\t" + (i + 1) + ".\t" + list.get(i));
         }
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-
     }
 
-    public void showOneObjectToUser(Object object) {
-
+    public void showToUser(Object object) {
         if (object != null) {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
             System.out.println("\t\t" + object);
@@ -103,9 +99,10 @@ public class Library implements Serializable {
         } else System.out.println("\t\tDoesn't exist, please try again. ");
     }
 
-
-    public void showToUser(Object object) {
-        System.out.println(object);
+    public void showToUser(String message) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        System.out.println("\t\t" + message);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void showAllBooksInLibrary() {
@@ -188,8 +185,9 @@ public class Library implements Serializable {
     }
 
     public void lendBookToUser(User user, Book book) {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
 
-        if(isBookAvailable(book)){
+        if (isBookAvailable(book)) {
             BookTracker bookTracker = book.getBookTracker();
             bookTracker.setAvailable(false);
             bookTracker.setUserThatBorrowed(user);
@@ -199,6 +197,7 @@ public class Library implements Serializable {
             callWatchers("lendBook", book);
         } else {
             System.out.println("Book is not available.");
+            System.out.println("Book should be returned " + dayPattern.format(book.getBookTracker().getDateOfReturn()));
         }
     }
 
@@ -210,13 +209,6 @@ public class Library implements Serializable {
         user.removeBookFromMyBooks(book);
 
         callWatchers("returnBook", book);
-    }
-
-
-    private int indexOfBookName(String title) {
-        return IntStream.range(0, booksInLibrary.size())
-                .filter(i -> booksInLibrary.get(i).getTitle().equalsIgnoreCase(title))
-                .findFirst().orElse(-1);
     }
 
     public void removeBookFromLibrary() {
@@ -259,7 +251,7 @@ public class Library implements Serializable {
 
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
-        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+        return timeNow + 2 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
 
     public void lendingStatusDate(long lendingPeriodInMs) {
@@ -267,41 +259,24 @@ public class Library implements Serializable {
         Date returnDay = new Date(lendingPeriodInMs);
 
         long timeNow = System.currentTimeMillis();
-
+        System.out.print("\t-\t");
         if (timeNow > lendingPeriodInMs) {
-            System.out.println("\t-\tYour book is late! Return to the library immediately.");
+            Message.showMessage("Your book is late! Return to the library immediately.", "red");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            System.out.printf("\t-\tYour loan period is almost over.\n" +
-                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+            Message.showMessage("Your loan period is almost over. " +
+                    String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            System.out.printf("\t-\tReturn the book latest %s.\n", dayPattern.format(returnDay));
+            Message.showMessage(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
         }
     }
 
-    public void printMyBooks(User user) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        for (int i = 0; i < user.getMyBooks().size(); i++) {
-            long temp = user.getMyBooks().get(i).getBookTracker().getDateOfReturn();
-            System.out.print("\t\t" + (i + 1) + ".\t" + user.getMyBooks().get(i).getTitle() + ", written by " + user.getMyBooks().get(i).getAuthor());
-            lendingStatusDate(temp);
-        }
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-    }
-
-    // Visar alla som inte är admins. Inte vilka som har lånat böcker.
-    public void getAllLenders() {
+    public void getAllNoneAdminUsers() {
         Stream<User> tempTest;
         tempTest = users
                 .stream()
                 .filter(user -> !user.isAdmin());
         tempTest.forEach(user ->
                 System.out.println("-- Name: " + user.getName() + ", ID: " + user.getUserID() + ", Books: " + user.getMyBooks() + "\n"));
-    }
-
-    private int indexOfUser(String inputID) {
-        return IntStream.range(0, users.size())
-                .filter(i -> users.get(i).getUserID().equalsIgnoreCase(inputID))
-                .findFirst().orElse(-1);
     }
 
     public void addUser() {
@@ -378,28 +353,19 @@ public class Library implements Serializable {
         return userID;
     }
 
-    // This method should have the user to be removed as a parameter.
-    // We should not rely on the index of the object in the List.
-    public void removeUser() {
-        Scanner scanner = new Scanner(System.in);
-        String userID;
-        System.out.println("\n--- Remove User ---\n");
-        System.out.print("UserID: ");
-        userID = scanner.nextLine();
-        int indexNo = indexOfUser(userID);
-        if (indexNo >= 0) {
-            users.remove(indexNo);
-            System.out.print("User is removed.\n\n");
+    public void removeUser(User user) {
+        if (user != null) {
+            users.remove(user);
+            showToUser(user.getName() + " was removed.");
+            callWatchers("delete", users);
         } else {
-            System.out.print("User was not found.\n\n");
+            showToUser("Could not find that user.");
         }
-
-        callWatchers("delete", users);
     }
 
     public String getInputFromUser(String input) {
         Scanner scan = new Scanner(System.in);
-        System.out.print(input);
+        System.out.print("\t\t" + input);
         String tempName = scan.nextLine();
         return tempName;
     }
@@ -412,8 +378,8 @@ public class Library implements Serializable {
             System.out.println("Sorry, user not found.");
     }
 
-    public User getSpecificUser(String userID) {
-        Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
+    public User getSpecificUser(String name) {
+        Optional<User> user = users.stream().filter(u -> u.getName().equals(name)).findFirst();
         if (user.isPresent())
             return user.get();
         else
@@ -441,7 +407,6 @@ public class Library implements Serializable {
         return libraryInstance;
     }
 
-
     public void populateMockupLibrary() {
         readInBooks();
         users.add(new User("John Doe", "12345", false));
@@ -449,7 +414,7 @@ public class Library implements Serializable {
         users.add(new User("Andy", "34567", true));
         users.add(new User("Misty", "45678", false));
 
-        User user = getSpecificUser("12345");
+        User user = getSpecificUser("John Doe");
         Book book = getSpecificBook("Vita tänder");
         Book book2 = getSpecificBook("Återstoden av dagen");
         lendBookToUser(user, book);

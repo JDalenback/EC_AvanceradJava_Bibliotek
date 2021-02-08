@@ -11,7 +11,9 @@ public class Program implements Serializable {
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
         //library.populateMockupLibrary();
-        //menu.login(library);
+        library.showAllUsers();
+
+        menu.login(library);
     }
 
     private void setLibrary(Object object) {
@@ -21,4 +23,6 @@ public class Program implements Serializable {
         else
             this.library = Library.getLibraryInstance();
     }
+
+
 }
