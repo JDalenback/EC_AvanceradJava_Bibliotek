@@ -121,10 +121,9 @@ public class Menu implements Serializable {
                 default:
                     System.out.println("Invalid selection!");
             }
-
         }
-
     }
+
 
     private void lenderMenu(Library library, User user) {
         Scanner scanner = new Scanner(System.in);
@@ -136,7 +135,9 @@ public class Menu implements Serializable {
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
-            menuOptionListOfBorrowedBooks(user);
+
+            System.out.print("4. See list of books that you haven't returned.");
+            d(user);
 
             System.out.println("5. Search book on title.");
             System.out.println("6. Search book on Author.");
@@ -181,14 +182,12 @@ public class Menu implements Serializable {
         }
     }
 
-    private void menuOptionListOfBorrowedBooks(User user) {
+    private void d(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
-        if (numberOfBooksLent == 0)
-            System.out.println("4. See list of books that you haven't returned.");
-        else if (user.numberOfLateBooks() > 0)
-            System.out.printf("4. See list of books that you haven't returned." + TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
-        else
-            System.out.printf("4. See list of books that you haven't returned.(%d)\n", numberOfBooksLent);
+        if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
+                System.out.printf(TextColors.ANSI_RED + "(%d)\n" + TextColors.ANSI_RESET, numberOfBooksLent);
+            else
+                System.out.printf("(%d)\n", numberOfBooksLent);
     }
 
     private void lendABook(Library library, User user) {
