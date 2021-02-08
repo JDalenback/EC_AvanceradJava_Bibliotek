@@ -251,7 +251,7 @@ public class Library implements Serializable {
 
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
-        return timeNow + 2 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
+        return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
 
     public void lendingStatusDate(long lendingPeriodInMs) {
