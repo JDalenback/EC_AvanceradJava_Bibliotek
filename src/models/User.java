@@ -34,6 +34,15 @@ public class User implements Serializable {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    public void printThisUser(User user) {
+        if (this != null) {
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t" + user.getName()+", ID: "+user.getUserID()+".\n\t\tAdmin: "+user.isAdmin()+".\n\n\t\tBooks:");
+            user.getMyBooks().forEach(book -> System.out.println("\t\t"+book));
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        } else System.out.println("\t\tDoesn't exist, please try again. ");
+    }
+
     public void setName(String name) {
         this.name = name;
     }

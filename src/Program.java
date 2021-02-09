@@ -8,6 +8,7 @@ public class Program implements Serializable {
     Menu menu = new Menu();
 
     public void start() {
+        //library.populateMockupLibrary();
         menu.login();
     }
 
