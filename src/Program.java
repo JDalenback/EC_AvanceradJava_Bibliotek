@@ -1,16 +1,11 @@
 import Utils.LibraryFileUtils;
 import models.Library;
 import models.Menu;
-import models.User;
-
-import java.io.Serial;
 import java.io.Serializable;
 
 public class Program implements Serializable {
     private Library library = null;
     Menu menu = new Menu();
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
@@ -23,13 +18,6 @@ public class Program implements Serializable {
         menu.login(library);
     }
 
-    private void saveLibraryToFile() {
-        LibraryFileUtils.serializeObject(library);
-    }
-
-    private void loadLibraryFroFile() {
-        setLibrary(LibraryFileUtils.deSerializeObject());
-    }
 
     private void setLibrary(Object object) {
         if (object != null) {
@@ -38,4 +26,6 @@ public class Program implements Serializable {
         else
             this.library = Library.getLibraryInstance();
     }
+
+
 }

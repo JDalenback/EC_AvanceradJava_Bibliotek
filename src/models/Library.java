@@ -2,8 +2,6 @@ package models;
 
 import Utils.LibraryFileUtils;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
@@ -11,20 +9,19 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static Library libraryInstance = null;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     private Library() {
         initializeWatchers();
     }
+
 
     private void initializeWatchers() {
         watch("insert", event ->
@@ -57,11 +54,20 @@ public class Library implements Serializable {
             System.out.println("\t\t" + (i + 1) + ".\t" + list.get(i));
         }
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-
     }
 
     public void showToUser(Object object) {
-        System.out.println(object);
+        if (object != null) {
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t" + object);
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        } else System.out.println("\t\tDoesn't exist, please try again. ");
+    }
+
+    public void showToUser(String message) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        System.out.println("\t\t" + message);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void showAllBooksInLibrary() {
@@ -179,14 +185,20 @@ public class Library implements Serializable {
     }
 
     public void lendBookToUser(User user, Book book) {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
 
-        BookTracker bookTracker = book.getBookTracker();
-        bookTracker.setAvailable(false);
-        bookTracker.setUserThatBorrowed(user);
-        bookTracker.setDateOfReturn(setBookReturnTime());
-        user.addBookToMyBooks(book);
+        if (isBookAvailable(book)) {
+            BookTracker bookTracker = book.getBookTracker();
+            bookTracker.setAvailable(false);
+            bookTracker.setUserThatBorrowed(user);
+            bookTracker.setDateOfReturn(setBookReturnTime());
+            user.addBookToMyBooks(book);
 
-        callWatchers("lendBook", book);
+            callWatchers("lendBook", book);
+        } else {
+            System.out.println("Book is not available.");
+            System.out.println("Book should be returned " + dayPattern.format(book.getBookTracker().getDateOfReturn()));
+        }
     }
 
     public void returnBookFromUser(User user, Book book) {
@@ -199,14 +211,6 @@ public class Library implements Serializable {
         callWatchers("returnBook", book);
     }
 
-
-    private int indexOfBookName(String title) {
-        return IntStream.range(0, booksInLibrary.size())
-                .filter(i -> booksInLibrary.get(i).getTitle().equalsIgnoreCase(title))
-                .findFirst().orElse(-1);
-    }
-
-    // to be changed to title when search function is added
     public void removeBookFromLibrary() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nRemove book.");
@@ -223,7 +227,6 @@ public class Library implements Serializable {
 
     public void addNewBookToLibrary() {
         Scanner scanner = new Scanner(System.in);
-        // BookTracker bookTracker = new BookTracker();
         String bookTitle;
         String author;
         String isbn;
@@ -246,57 +249,36 @@ public class Library implements Serializable {
         callWatchers("insert", newBook);
     }
 
-//create new users and put them in list of allUsers
-
-
     public Long setBookReturnTime() {
         long timeNow = System.currentTimeMillis();
         return timeNow + 14 * 24 * 60 * 60 * 1000; // one day = 86400000 ms
     }
-
 
     public void lendingStatusDate(long lendingPeriodInMs) {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         Date returnDay = new Date(lendingPeriodInMs);
 
         long timeNow = System.currentTimeMillis();
-
+        System.out.print("\t-\t");
         if (timeNow > lendingPeriodInMs) {
-            System.out.println("\t-\tYour book is late! Return to the library immediately.");
+            Message.showMessage("Your book is late! Return to the library immediately.", "red");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            System.out.printf("\t-\tYour loan period is almost over.\n" +
-                    "Please return the book at the latest %s.\n", dayPattern.format(returnDay));
+            Message.showMessage("Your loan period is almost over. " +
+                    String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            System.out.printf("\t-\tReturn the book latest %s.\n", dayPattern.format(returnDay));
+            Message.showMessage(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
         }
     }
 
-    public void printMyBooks(User user) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        for (int i = 0; i < user.getMyBooks().size(); i++) {
-            long temp = user.getMyBooks().get(i).getBookTracker().getDateOfReturn();
-            System.out.print("\t\t" + (i + 1) + ".\t" + user.getMyBooks().get(i).getTitle() + ", written by " + user.getMyBooks().get(i).getAuthor());
-            lendingStatusDate(temp);
-        }
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-    }
-
-    public void getAllLenders() {
-        Stream<User> tempTest;
-        tempTest = users
+    public void getAllNoneAdminUsers() {
+        List<String> tempTest = users
                 .stream()
-                .filter(user -> !user.isAdmin());
-        tempTest.forEach(user ->
-                System.out.println("-- Name: " + user.getName() + ", ID: " + user.getUserID() + ", Books: " + user.getMyBooks() + "\n"));
+                .filter(user -> !user.isAdmin())
+                .map(User::getName)
+                .collect(Collectors.toList());
+        showToUser(tempTest);
     }
 
-    private int indexOfUser(String inputID) {
-        return IntStream.range(0, users.size())
-                .filter(i -> users.get(i).getUserID().equalsIgnoreCase(inputID))
-                .findFirst().orElse(-1);
-    }
-
-    //create new visitor and put it in list of users
     public void addUser() {
         String name;
         String userID;
@@ -309,7 +291,7 @@ public class Library implements Serializable {
             System.out.print("---Create a new USER---\n\nName: ");
             name = scan.nextLine();
             System.out.print("UserID: ");
-            userID = scan.nextLine();
+            userID = makeValidUserID();
             System.out.println("Admin? Enter \"yes\" or \"no\"");
             admin = scan.nextLine();
 
@@ -324,7 +306,7 @@ public class Library implements Serializable {
                 callWatchers("insert", newUser);
                 userAdd = true;
             } else {
-                System.out.println("Username already exists. You have to choose another");
+                Message.showMessage("Username already exists. You have to choose another", "red");
             }
         }
 
@@ -365,99 +347,48 @@ public class Library implements Serializable {
                 System.out.println("Password accepted\n");
                 isRunning = false;
             } else {
-                System.out.println("\nInvalid content in your UserID!");
+                Message.showMessage("\nInvalid content in your UserID!", "red");
             }
         }
         return userID;
     }
 
-    // This method should have the user to be removed as a parameter.
-    // We should not rely on the index of the object in the List.
-    public void removeUser() {
-        Scanner scanner = new Scanner(System.in);
-        String userID;
-        System.out.println("\n--- Remove User ---\n");
-        System.out.print("UserID: ");
-        userID = scanner.nextLine();
-        int indexNo = indexOfUser(userID);
-        if (indexNo >= 0) {
-            users.remove(indexNo);
-            System.out.print("User is removed.\n\n");
+    public void removeUser(User user) {
+        if (user != null) {
+            users.remove(user);
+            showToUser(user.getName() + " was removed.");
+            callWatchers("delete", users);
         } else {
-            System.out.print("User was not found.\n\n");
+            showToUser("Could not find that user.");
         }
-
-        callWatchers("delete", users);
     }
 
     public String getInputFromUser(String input) {
         Scanner scan = new Scanner(System.in);
-        System.out.print(input);
+        System.out.print("\n" + input);
         String tempName = scan.nextLine();
+        System.out.println();
         return tempName;
     }
 
     public void printUser(String userName) {
         Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
         if (user.isPresent()) {
-            System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
+            System.out.println("\n--- Name: " + userName + "\n, UserID: " + user.get().getUserID() + "\n, Books: " + user.get().getMyBooks() + "\n");
         } else
-            System.out.println("Sorry, user not found.");
+            Message.showMessage("Sorry, user not found.", "red");
     }
 
-    // To be removed when save/read file is implemented.
-
-
-    public User getSpecificUser(String userID) {
-        Optional<User> user = users.stream().filter(u -> u.getUserID().equals(userID)).findFirst();
+    public User getSpecificUser(String name) {
+        Optional<User> user = users.stream().filter(u -> u.getName().equals(name)).findFirst();
         if (user.isPresent())
             return user.get();
         else
             return null;
     }
 
-    // To be removed when save/read file is implemented.
-
-    public static void serializeObject(Object library, String fileName) {
-        try (FileOutputStream fileOutStream = new FileOutputStream(fileName); ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream)) {
-            objectOutStream.writeObject(library);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Library deSerializeObject() {
-        Library library = null;
-        try (ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("src/models/books.ser"))) {
-            library = (Library) objectInput.readObject();
-        } catch (FileNotFoundException e) {
-            // New Library Will be created if file is not found.
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return library;
-
-    }
-
-
-    public void populateMockupLibrary() {
-        readInBooks();
-        users.add(new User("John Doe", "12345", false));
-        users.add(new User("Molly", "23456", true));
-        users.add(new User("Andy", "34567", true));
-        users.add(new User("Misty", "45678", false));
-
-        User user = getSpecificUser("12345");
-        Book book = getSpecificBook("Vita tänder");
-        Book book2 = getSpecificBook("Återstoden av dagen");
-        lendBookToUser(user, book);
-        lendBookToUser(user, book2);
-        lendBookToUser(user, book);
-    }
-
     public void printoutTitle(String title) {
-        System.out.printf("\n%s\n\n", title);
+        System.out.printf("\n\t\t%s\n", title);
     }
 
     public void createReadingPausForUser() {
@@ -477,8 +408,20 @@ public class Library implements Serializable {
         return libraryInstance;
     }
 
+    public void populateMockupLibrary() {
+        readInBooks();
+        users.add(new User("John Doe", "12345", false));
+        users.add(new User("Molly", "23456", true));
+        users.add(new User("Andy", "34567", true));
+        users.add(new User("Misty", "45678", false));
 
-    // Test method. Use to populate library with a few books and users. To be removed!
+        User user = getSpecificUser("John Doe");
+        Book book = getSpecificBook("Vita tänder");
+        Book book2 = getSpecificBook("Återstoden av dagen");
+        lendBookToUser(user, book);
+        lendBookToUser(user, book2);
+        lendBookToUser(user, book);
+    }
 
     private void readInBooks() {
         Book book1 = new Book("Vita tänder", "Zadie Smith", "9789175036434", "I en myllrande del av London möts medlemmar från familjerna Jones, Iqbal " +

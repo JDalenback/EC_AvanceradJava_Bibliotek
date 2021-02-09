@@ -1,10 +1,8 @@
 package models;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class User implements Serializable {
 
@@ -24,6 +22,16 @@ public class User implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void printMyBooks() {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        for (int i = 0; i < getMyBooks().size(); i++) {
+            long temp = getMyBooks().get(i).getBookTracker().getDateOfReturn();
+            System.out.print("\t\t" + (i + 1) + ".\t" + getMyBooks().get(i).getTitle() + ", written by " + getMyBooks().get(i).getAuthor());
+           Library.getLibraryInstance().lendingStatusDate(temp);
+        }
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void setName(String name) {
@@ -46,6 +54,17 @@ public class User implements Serializable {
         this.admin = admin;
     }
 
+    public int numberOfBorrowedBooks(){
+        return myBooks.size();
+    }
+
+    public Long numberOfLateBooks(){
+        return  myBooks
+                .stream()
+                .filter(userBook -> userBook.getBookTracker().getDateOfReturn() < System.currentTimeMillis())
+                .count();
+    }
+
     public List<Book> getMyBooks() {
         return myBooks;
     }
@@ -60,11 +79,11 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{ " +
-                "name='" + name + '\'' +
-                ", userID='" + userID + '\'' +
-                ", admin=" + admin +
-                ", myBooks=" + myBooks +
-                '}';
+        String userInfo =  "Name = " + name + "\n" +
+                "\t\tUserID = " + userID + "\n" +
+                "\t\tAdmin = " + admin + "\n" +
+                "\t\tMy Books = " + myBooks;
+
+        return userInfo;
     }
 }
