@@ -1,7 +1,5 @@
 package models;
 
-import Utils.LibraryFileUtils;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -83,17 +81,17 @@ public class Menu implements Serializable {
                 case "1":
                     library.printoutTitle("Available books:");
                     library.showAvailableBooksInLibrary();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "2":
                     library.printoutTitle("Lent books:");
                     library.showAllLentBooksInLibrary();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "3":
                     library.printoutTitle("Late books:");
                     library.showAllLateBooks();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "4":
                     lendABook(library, user);
@@ -103,28 +101,28 @@ public class Menu implements Serializable {
                     break;
                 case "6":
                     library.addNewBookToLibrary();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "7":
                     library.removeBookFromLibrary();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "8":
                     library.getAllNoneAdminUsers();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "9":
                     user.printThisUser(library.getSpecificUser(library.getInputFromUser("Name: ")));
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "10":
                     library.addUser();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "11":
                     String userName = library.getInputFromUser("Name of user to be removed: ");
                     library.removeUser(library.getSpecificUser(userName));
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "15":
                     isRunning = false;
@@ -148,13 +146,8 @@ public class Menu implements Serializable {
             System.out.println("3. Return book.");
             System.out.print("4. See list of books that you haven't returned.");
             numberOfBooksUserHasBorrowed(user);
-
-            System.out.println("5. Search book on title.");
-            System.out.println("6. Search book on Author.");
-
             System.out.println("5. Search for book (Title or ISBN).");
             System.out.println("6. Search for books (Title, Author or ISBN).");
-
             System.out.println("7. Read more about a book.");
             System.out.println("9. Logg out");
 
@@ -163,7 +156,7 @@ public class Menu implements Serializable {
                 case "1":
                     library.printoutTitle("Available books:");
                     library.showAvailableBooksInLibrary();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "2":
                     lendABook(library, user);
@@ -173,19 +166,19 @@ public class Menu implements Serializable {
                     break;
                 case "4":
                     user.printMyBooks();
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "5":
                     String bookSearchParameter = library.getInputFromUser("Search for book: ");
                     Book searchedBook = library.getSpecificBook(bookSearchParameter);
                     showBookSearchResults(bookSearchParameter, searchedBook);
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "6":
                     String booksSearchParameter = library.getInputFromUser("Search for book by title, author or ISBN: ");
                     List<Book> searchedBooks = library.searchForBook(booksSearchParameter);
                     showBookSearchResults(searchedBooks);
-                    library.createReadingPausForUser();
+                    library.createReadingPauseForUser();
                     break;
                 case "7":
                     library.showAllBooksInLibrary();
@@ -193,23 +186,28 @@ public class Menu implements Serializable {
                     System.out.print("Title of book you want to read more about: ");
                     String tempTitle = scanner.nextLine();
                     Book book = library.getSpecificBook(tempTitle);
+                    System.out.println("\n\t\t-----------------------------------------------------------------" +
+                            "-----------------------------------------------------");
                     if (book != null) {
-                        Message.showMessage("\n\t\tWritten by: "+book.getAuthor(),"yellow");
+                        Message.showMessage("\t\tWritten by: " + book.getAuthor(), "yellow");
                         Matcher matcher = pattern.matcher(book.getDescription());
                         while (matcher.find()) {
                             System.out.println("\t\t" + matcher.group(0).trim());
                         }
                         if (book.getBookTracker().isAvailable()) {
-                            Message.showMessage("\n\t\tThe book is available.","green");
-                        }else {
+                            Message.showMessage("\t\tThe book is available.", "green");
+                        } else {
                             DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
                             Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
-                            Message.showMessage("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay),"red");
+                            Message.showMessage("\t\tThe book is not available. Should be returned "
+                                    + dayPattern.format(returnDay), "red");
                         }
                     } else {
-                        Message.showMessage("\n\t\tBook " + tempTitle + " was not found!","red");
+                        Message.showMessage("\t\tBook " + tempTitle + " was not found!", "red");
                     }
-                    library.createReadingPausForUser();
+                    System.out.println("\t\t-----------------------------------------------------------------" +
+                            "-----------------------------------------------------");
+                    library.createReadingPauseForUser();
                     break;
                 case "9":
                     isRunning = false;
@@ -267,7 +265,7 @@ public class Menu implements Serializable {
             library.printoutTitle("Book " + tempTitle + " not found, " +
                     "no book has been lent to you");
         }
-        library.createReadingPausForUser();
+        library.createReadingPauseForUser();
     }
 
     private void returnABook(Library library, User user) {
@@ -283,6 +281,6 @@ public class Menu implements Serializable {
         } else {
             library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
         }
-        library.createReadingPausForUser();
+        library.createReadingPauseForUser();
     }
 }
