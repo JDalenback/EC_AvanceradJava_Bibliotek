@@ -9,13 +9,13 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-
-        library.sortByAuthor();
-        //library.checkIfUserNameExists(new User("Molly", "12345", false));
-        //library.addUser();
-        //Library.serializeObject(library, "src/models/books.ser");
-        //menu.login();
+       //library.populateMockupLibrary();
+        //library.showAllUsers();
         menu.login(library);
+    }
+
+    private void saveLibraryToFile() {
+        LibraryFileUtils.serializeObject(library);
     }
 
 
@@ -26,6 +26,4 @@ public class Program implements Serializable {
         else
             this.library = Library.getLibraryInstance();
     }
-
-
 }
