@@ -4,25 +4,12 @@ import models.Menu;
 import java.io.Serializable;
 
 public class Program implements Serializable {
-    private Library library = null;
+    private Library library = Library.instance;
     Menu menu = new Menu();
-    private static final long serialVersionUID = 1L;
 
     public void start() {
-        setLibrary(LibraryFileUtils.deSerializeObject());
-        library.populateMockupLibrary();
-        library.showAllUsers();
-
-        menu.login(library);
+        //library.populateMockupLibrary();
+        menu.login();
     }
-
-    private void setLibrary(Object object) {
-        if (object != null) {
-            this.library = (Library) object;
-        }
-        else
-            this.library = Library.getLibraryInstance();
-    }
-
 
 }
