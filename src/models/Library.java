@@ -73,6 +73,12 @@ public class Library implements Serializable {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    public void showToUser(String message, String color) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        Message.showMessage("\t\t"+message,color);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+    }
+
     public void showAllBooksInLibrary() {
         showToUser(booksInLibrary);
     }
@@ -391,10 +397,10 @@ public class Library implements Serializable {
 
     public void createReadingPauseForUser() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nPress enter to continue.");
+        System.out.print("\nPress enter to continue.");
         String nothing = scanner.nextLine();
         nothing="";
-        System.out.println(nothing);
+        System.out.print(nothing);
     }
 
     public List<User> getUsers() {
