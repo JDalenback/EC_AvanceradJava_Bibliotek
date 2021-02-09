@@ -1,8 +1,15 @@
 package models;
 
+import Utils.LibraryFileUtils;
+
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
@@ -145,7 +152,7 @@ public class Menu implements Serializable {
             numberOfBooksUserHasBorrowed(user);
 
             System.out.println("5. Search for book (Title or ISBN).");
-            System.out.println("6. Search for books by Author.");
+            System.out.println("6. Search for books (Title, Author or ISBN).");
             System.out.println("7. Read more about a book.");
             System.out.println("9. Logg out");
 
@@ -173,13 +180,34 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "6":
-                    String booksSearchParameter = library.getInputFromUser("Search for book, author or ISBN: ");
+                    String booksSearchParameter = library.getInputFromUser("Search for book by title, author or ISBN: ");
                     List<Book> searchedBooks = library.searchForBook(booksSearchParameter);
                     showBookSearchResults(searchedBooks);
                     library.createReadingPausForUser();
                     break;
                 case "7":
-
+                    library.showAllBooksInLibrary();
+                    Pattern pattern = Pattern.compile("[^\\.\\!\\?]*[\\.\\!\\?]");
+                    System.out.print("Title of book you want to read more about: ");
+                    String tempTitle = scanner.nextLine();
+                    Book book = library.getSpecificBook(tempTitle);
+                    if (book != null) {
+                        Message.showMessage("\n\t\tWritten by: "+book.getAuthor(),"yellow");
+                        Matcher matcher = pattern.matcher(book.getDescription());
+                        while (matcher.find()) {
+                            System.out.println("\t\t" + matcher.group(0).trim());
+                        }
+                        if (book.getBookTracker().isAvailable()) {
+                            Message.showMessage("\n\t\tThe book is available.","green");
+                        }else {
+                            DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+                            Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
+                            Message.showMessage("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay),"red");
+                        }
+                    } else {
+                        Message.showMessage("\n\t\tBook " + tempTitle + " was not found!","red");
+                    }
+                    library.createReadingPausForUser();
                     break;
                 case "9":
                     isRunning = false;
