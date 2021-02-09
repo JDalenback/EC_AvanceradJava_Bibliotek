@@ -29,7 +29,7 @@ public class User implements Serializable {
         for (int i = 0; i < getMyBooks().size(); i++) {
             long temp = getMyBooks().get(i).getBookTracker().getDateOfReturn();
             System.out.print("\t\t" + (i + 1) + ".\t" + getMyBooks().get(i).getTitle() + ", written by " + getMyBooks().get(i).getAuthor());
-           Library.getLibraryInstance().lendingStatusDate(temp);
+           Library.instance.lendingStatusDate(temp);
         }
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
