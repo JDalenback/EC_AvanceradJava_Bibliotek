@@ -260,10 +260,10 @@ public class Menu implements Serializable {
         book = library.getSpecificBook(tempTitle);
         if (book != null) {
             library.lendBookToUser(user, book);
-            library.printoutTitle(book.getTitle() + " has been lent to you.");
+            library.showToUser(book.getTitle() + " has been lent to you.","green");
         } else {
-            library.printoutTitle("Book " + tempTitle + " not found, " +
-                    "no book has been lent to you");
+            library.showToUser("Book " + tempTitle + " not found, " +
+                    "no book has been lent to you", "red");
         }
         library.createReadingPauseForUser();
     }
@@ -277,9 +277,9 @@ public class Menu implements Serializable {
         book = library.getSpecificBook(tempTitle);
         if (book != null) {
             library.returnBookFromUser(user, book);
-            library.printoutTitle(book.getTitle() + " has been returned.");
+            library.showToUser(book.getTitle() + " has been returned.","green");
         } else {
-            library.printoutTitle("Book " + tempTitle + " not found, no book returned.");
+            library.showToUser("Book " + tempTitle + " not found, no book returned.","red");
         }
         library.createReadingPauseForUser();
     }
