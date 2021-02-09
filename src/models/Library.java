@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Library implements Serializable {
@@ -39,7 +38,6 @@ public class Library implements Serializable {
             System.out.println(title);
         }
     }
-
 
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
@@ -271,12 +269,12 @@ public class Library implements Serializable {
     }
 
     public void getAllNoneAdminUsers() {
-        Stream<User> tempTest;
-        tempTest = users
+        List<String> tempTest = users
                 .stream()
-                .filter(user -> !user.isAdmin());
-        tempTest.forEach(user ->
-                System.out.println("-- Name: " + user.getName() + ", ID: " + user.getUserID() + ", Books: " + user.getMyBooks() + "\n"));
+                .filter(user -> !user.isAdmin())
+                .map(User::getName)
+                .collect(Collectors.toList());
+        showToUser(tempTest);
     }
 
     public void addUser() {
@@ -291,7 +289,7 @@ public class Library implements Serializable {
             System.out.print("---Create a new USER---\n\nName: ");
             name = scan.nextLine();
             System.out.print("UserID: ");
-            userID = scan.nextLine();
+            userID = makeValidUserID();
             System.out.println("Admin? Enter \"yes\" or \"no\"");
             admin = scan.nextLine();
 
@@ -306,7 +304,7 @@ public class Library implements Serializable {
                 callWatchers("insert", newUser);
                 userAdd = true;
             } else {
-                System.out.println("Username already exists. You have to choose another");
+                Message.showMessage("Username already exists. You have to choose another", "red");
             }
         }
 
@@ -347,7 +345,7 @@ public class Library implements Serializable {
                 System.out.println("Password accepted\n");
                 isRunning = false;
             } else {
-                System.out.println("\nInvalid content in your UserID!");
+                Message.showMessage("\nInvalid content in your UserID!", "red");
             }
         }
         return userID;
@@ -365,17 +363,18 @@ public class Library implements Serializable {
 
     public String getInputFromUser(String input) {
         Scanner scan = new Scanner(System.in);
-        System.out.print("\t\t" + input);
+        System.out.print("\n" + input);
         String tempName = scan.nextLine();
+        System.out.println();
         return tempName;
     }
 
     public void printUser(String userName) {
         Optional<User> user = users.stream().filter(u -> u.getName().equals(userName)).findFirst();
         if (user.isPresent()) {
-            System.out.println("\n--- Name: " + userName + ", UserID: " + user.get().getUserID() + ", Books: " + user.get().getMyBooks() + "\n");
+            System.out.println("\n--- Name: " + userName + "\n, UserID: " + user.get().getUserID() + "\n, Books: " + user.get().getMyBooks() + "\n");
         } else
-            System.out.println("Sorry, user not found.");
+            Message.showMessage("Sorry, user not found.", "red");
     }
 
     public User getSpecificUser(String name) {

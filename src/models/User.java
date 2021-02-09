@@ -79,11 +79,11 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{ " +
-                "name='" + name + '\'' +
-                ", userID='" + userID + '\'' +
-                ", admin=" + admin +
-                ", myBooks=" + myBooks +
-                '}';
+        String userInfo =  "Name = " + name + "\n" +
+                "\t\tUserID = " + userID + "\n" +
+                "\t\tAdmin = " + admin + "\n" +
+                "\t\tMy Books = " + myBooks;
+
+        return userInfo;
     }
 }
