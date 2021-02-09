@@ -10,7 +10,7 @@ public class Program implements Serializable {
 
     public void start() {
         setLibrary(LibraryFileUtils.deSerializeObject());
-        //library.populateMockupLibrary();
+        library.populateMockupLibrary();
         library.showAllUsers();
 
         menu.login(library);

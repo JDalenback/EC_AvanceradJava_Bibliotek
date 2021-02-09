@@ -106,8 +106,7 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "9":
-                    User tempUser = library.getSpecificUser(library.getInputFromUser("Name: "));
-                    library.showToUser(tempUser);
+                    user.printThisUser(library.getSpecificUser(library.getInputFromUser("Name: ")));
                     library.createReadingPausForUser();
                     break;
                 case "10":
@@ -139,10 +138,8 @@ public class Menu implements Serializable {
             System.out.println("1. See available books.");
             System.out.println("2. Lend a book.");
             System.out.println("3. Return book.");
-
             System.out.print("4. See list of books that you haven't returned.");
             numberOfBooksUserHasBorrowed(user);
-
             System.out.println("5. Search book on title.");
             System.out.println("6. Search book on Author.");
             System.out.println("7. Read more about a book.");
