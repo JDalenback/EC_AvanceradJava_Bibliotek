@@ -12,8 +12,7 @@ public class User implements Serializable {
     private String userID;
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
-    @Serial
-    private static final long serialVersionUID = 1L;
+
     Library library;
 
     public User(String name, String userID, boolean admin) {

@@ -26,44 +26,6 @@ public class Library implements Serializable {
         initializeWatchers();
     }
 
-    /**
-     * Sortera boklistan efter titel eller författare
-     */
-
-    public void sortByTitle() {
-        List<String> booksByTitle = new ArrayList<>();
-
-        for (Object item : booksInLibrary) {
-            String partString = item.toString().substring(7);
-            String[] getTitle = partString.split("Author");
-            booksByTitle.add(getTitle[0]);
-        }
-        Collections.sort(booksByTitle);
-        for (String title : booksByTitle) {
-            System.out.println(title);
-        }
-
-
-    }
-
-
-    public void sortByAuthor() {
-        List<String> booksByAuthor = new ArrayList<>();
-
-        for (Object item : booksInLibrary) {
-            String partString = item.toString().substring(7);
-            String[] splitListObject = partString.split("Author");
-            String[] authorName = splitListObject[1].split("ISBN");
-            String author = authorName[0];
-            booksByAuthor.add(author.substring(1));
-        }
-        Collections.sort(booksByAuthor);
-        for (String title : booksByAuthor) {
-            System.out.println(title);
-        }
-    }
-
-
     private void initializeWatchers() {
         watch("insert", event ->
                 LibraryFileUtils.serializeObject(this));
@@ -98,13 +60,47 @@ public class Library implements Serializable {
 
     }
 
-
     public void showToUser(Object object) {
         System.out.println(object);
     }
 
     public void showAllBooksInLibrary() {
         showToUser(booksInLibrary);
+    }
+    public void sortByTitle() {
+        List<String> booksByTitle = new ArrayList<>();
+
+        for (Object item : booksInLibrary) {
+            String partString = item.toString().substring(7);
+            booksByTitle.add(partString);
+        }
+
+        Collections.sort(booksByTitle);
+        for (String title : booksByTitle) {
+            System.out.println("Title: " + title);
+        }
+
+    }
+    public void sortByAuthor() {
+        List<String> booksByAuthor = new ArrayList<>();
+
+        for (Object item : booksInLibrary) {
+            String[] splitAuthor = item.toString().split("Author");
+            String author = splitAuthor[1].substring(2);
+
+            String title = splitAuthor[0];
+
+            String[] authorRemoveIsbn = author.split("ISBN");
+            String isbn = authorRemoveIsbn[1].substring(2);
+
+            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title +  "ISBN: " + isbn);
+        }
+
+        Collections.sort(booksByAuthor);
+        for (String title : booksByAuthor) {
+            System.out.println(title);
+        }
+
     }
 
     public void showAvailableBooksInLibrary() {
