@@ -1,7 +1,5 @@
 package models;
 
-import Utils.LibraryFileUtils;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -115,7 +113,7 @@ public class Menu implements Serializable {
                     break;
                 case "9":
                     User tempUser = library.getSpecificUser(library.getInputFromUser("Name: "));
-                    library.showToUser(tempUser);
+                    Message.systemMessage(tempUser);
                     library.createReadingPausForUser();
                     break;
                 case "10":
@@ -192,20 +190,20 @@ public class Menu implements Serializable {
                     String tempTitle = scanner.nextLine();
                     Book book = library.getSpecificBook(tempTitle);
                     if (book != null) {
-                        Message.showMessage("\n\t\tWritten by: "+book.getAuthor(),"yellow");
+                        Message.showMessageWithColor("\n\t\tWritten by: "+book.getAuthor(),"yellow");
                         Matcher matcher = pattern.matcher(book.getDescription());
                         while (matcher.find()) {
                             System.out.println("\t\t" + matcher.group(0).trim());
                         }
                         if (book.getBookTracker().isAvailable()) {
-                            Message.showMessage("\n\t\tThe book is available.","green");
+                            Message.showMessageWithColor("\n\t\tThe book is available.","green");
                         }else {
                             DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
                             Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
-                            Message.showMessage("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay),"red");
+                            Message.showMessageWithColor("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay),"red");
                         }
                     } else {
-                        Message.showMessage("\n\t\tBook " + tempTitle + " was not found!","red");
+                        Message.showMessageWithColor("\n\t\tBook " + tempTitle + " was not found!","red");
                     }
                     library.createReadingPausForUser();
                     break;
@@ -222,13 +220,13 @@ public class Menu implements Serializable {
         Library library = Library.instance;
 
         if (searchedBook != null)
-            library.showToUser(searchedBook);
+            Message.systemMessage(searchedBook);
         else {
-            Message.showMessage("Couldn't find that book.", "red");
+            Message.showMessageWithColor("Couldn't find that book.", "red");
             List<Book> bookOptions = library.searchForBook(searchParameter);
             if (bookOptions.size() > 0) {
-                Message.showMessage("Is this what you wanted?", "default");
-                library.showToUser(bookOptions);
+                Message.showMessageWithColor("Is this what you wanted?", "default");
+                Message.systemMessage(bookOptions);
             }
         }
     }
@@ -237,18 +235,18 @@ public class Menu implements Serializable {
         Library library = Library.instance;
 
         if (searchedBook.size() > 0) {
-            Message.showMessage("\t\tSearch result", "default");
-            library.showToUser(searchedBook);
+            Message.showMessageWithColor("\t\tSearch result", "default");
+            Message.systemMessage(searchedBook);
         } else
-            Message.showMessage("Couldn't find a matching book or author", "red");
+            Message.showMessageWithColor("Couldn't find a matching book or author", "red");
     }
 
     private void numberOfBooksUserHasBorrowed(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
         if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
-            Message.showMessage(String.format("(%d)", numberOfBooksLent), "red");
+            Message.showMessageWithColor(String.format("(%d)", numberOfBooksLent), "red");
         else
-            Message.showMessage(String.format("(%d)", numberOfBooksLent), "default");
+            Message.showMessageWithColor(String.format("(%d)", numberOfBooksLent), "default");
     }
 
     private void lendABook(Library library, User user) {
