@@ -48,6 +48,12 @@ public class Library implements Serializable {
     }
 
 
+    public void showToUser(String message, String color) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        Message.messageWithColor("\t\t"+message,color);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+    }
+
     public void showAllBooksInLibrary() {
         Message.systemMessage(booksInLibrary);
     }
@@ -234,12 +240,12 @@ public class Library implements Serializable {
         long timeNow = System.currentTimeMillis();
         System.out.print("\t-\t");
         if (timeNow > lendingPeriodInMs) {
-            Message.showMessageWithColor("Your book is late! Return to the library immediately.", "red");
+            Message.messageWithColor("Your book is late! Return to the library immediately.", "red");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            Message.showMessageWithColor("Your loan period is almost over. " +
+            Message.messageWithColor("Your loan period is almost over. " +
                     String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            Message.showMessageWithColor(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
+            Message.messageWithColor(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
         }
     }
 
@@ -279,7 +285,7 @@ public class Library implements Serializable {
                 callWatchers("insert", newUser);
                 userAdd = true;
             } else {
-                Message.showMessageWithColor("Username already exists. You have to choose another", "red");
+                Message.messageWithColor("Username already exists. You have to choose another", "red");
             }
         }
 
@@ -321,7 +327,7 @@ public class Library implements Serializable {
                 System.out.println("Password accepted\n");
                 isRunning = false;
             } else {
-                Message.showMessageWithColor("\nInvalid content in your UserID!", "red");
+                Message.messageWithColor("\nInvalid content in your UserID!", "red");
             }
         }
         return userID;
@@ -350,7 +356,7 @@ public class Library implements Serializable {
         if (user.isPresent()) {
             System.out.println("\n--- Name: " + userName + "\n, UserID: " + user.get().getUserID() + "\n, Books: " + user.get().getMyBooks() + "\n");
         } else
-            Message.showMessageWithColor("Sorry, user not found.", "red");
+            Message.messageWithColor("Sorry, user not found.", "red");
     }
 
     public User getSpecificUser(String name) {
@@ -365,10 +371,12 @@ public class Library implements Serializable {
         System.out.printf("\n\t\t%s\n", title);
     }
 
-    public void createReadingPausForUser() {
+    public void createReadingPauseForUser() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nPress enter to continue.");
+        System.out.print("\nPress enter to continue.");
         String nothing = scanner.nextLine();
+        nothing="";
+        System.out.print(nothing);
     }
 
     public List<User> getUsers() {

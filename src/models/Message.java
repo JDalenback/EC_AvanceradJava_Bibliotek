@@ -8,7 +8,7 @@ public class Message {
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
-    public static void showMessageWithColor(String message, String color) {
+    public static void messageWithColor(String message, String color) {
         System.out.println(getColor(color) + message + ANSI_RESET);
     }
 
@@ -27,7 +27,7 @@ public class Message {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
         } else {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-            Message.showMessageWithColor("\t\tDoesn't exist, please try again. ", "red");
+            messageWithColor("\t\tDoesn't exist, please try again. ", "red");
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
         }
     }
