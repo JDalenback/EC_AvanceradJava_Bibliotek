@@ -13,8 +13,7 @@ public class Program implements Serializable {
         setLibrary(Library.deSerializeObject());
         setLibrary(LibraryFileUtils.deSerializeObject());
 
-        //library.populateMockupLibrary();
-        library.populateMockupLibrary();
+     // library.populateMockupLibrary();
     //    library.checkIfUserNameExists(new User("Molly", "12345", false));
         //Library.serializeObject(library, "src/models/books.ser");
         //menu.login();

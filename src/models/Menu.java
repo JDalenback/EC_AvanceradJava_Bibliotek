@@ -1,8 +1,14 @@
 package models;
 
 import java.io.Serializable;
+import java.lang.reflect.Parameter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
@@ -166,7 +172,28 @@ public class Menu implements Serializable {
 
                     break;
                 case "7":
-
+                    library.showAllBooksInLibrary();
+                    Pattern pattern = Pattern.compile("[^\\.\\!\\?]*[\\.\\!\\?]");
+                    System.out.print("Title of book you want to read more about: ");
+                    String tempTitle = scanner.nextLine();
+                    Book book = library.getSpecificBook(tempTitle);
+                    if (book != null) {
+                        System.out.println("\n\t\tWritten by: "+book.getAuthor());
+                        Matcher matcher = pattern.matcher(book.getDescription());
+                        while (matcher.find()) {
+                            System.out.println("\t\t" + matcher.group(0).trim());
+                        }
+                        if (book.getBookTracker().isAvailable()) {
+                            System.out.println("\n\t\tThe book is available.");
+                        }else {
+                            DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+                            Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
+                            System.out.println("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay));
+                        }
+                    } else {
+                        library.printoutTitle("\n\t\tBook " + tempTitle + " not found!");
+                    }
+                    library.createReadingPausForUser();
                     break;
                 case "8":
 
@@ -193,7 +220,7 @@ public class Menu implements Serializable {
             library.printoutTitle(book.getTitle() + " has been lent to you.");
         } else {
             library.printoutTitle("Book " + tempTitle + " not found, " +
-                    "no book has benn lent to you");
+                    "no book has benn lent to you.");
         }
         library.createReadingPausForUser();
     }
