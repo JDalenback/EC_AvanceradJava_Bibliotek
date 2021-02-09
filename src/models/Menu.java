@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class Menu implements Serializable {
     private static final long serialVersionUID = 1L;
+
     public void login(Library library) {
         Scanner scanner = new Scanner(System.in);
         String userName;
@@ -105,7 +106,8 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "9":
-                    library.printUser(library.getInputFromUser("Name: "));
+                    User tempUser = library.getSpecificUser(library.getInputFromUser("Name: "));
+                    library.showToUser(tempUser);
                     library.createReadingPausForUser();
                     break;
                 case "10":
@@ -189,9 +191,9 @@ public class Menu implements Serializable {
     private void numberOfBooksUserHasBorrowed(User user) {
         int numberOfBooksLent = user.numberOfBorrowedBooks();
         if (numberOfBooksLent > 0 && user.numberOfLateBooks() > 0)
-                Message.showMessage(String.format("(%d)", numberOfBooksLent), "red");
-            else
-                Message.showMessage(String.format("(%d)", numberOfBooksLent), "default");
+            Message.showMessage(String.format("(%d)", numberOfBooksLent), "red");
+        else
+            Message.showMessage(String.format("(%d)", numberOfBooksLent), "default");
     }
 
     private void lendABook(Library library, User user) {
