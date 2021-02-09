@@ -389,10 +389,12 @@ public class Library implements Serializable {
         System.out.printf("\n\t\t%s\n", title);
     }
 
-    public void createReadingPausForUser() {
+    public void createReadingPauseForUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nPress enter to continue.");
         String nothing = scanner.nextLine();
+        nothing="";
+        System.out.println(nothing);
     }
 
     public List<User> getUsers() {
