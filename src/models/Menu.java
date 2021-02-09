@@ -1,7 +1,8 @@
 package models;
 
+import Utils.LibraryFileUtils;
+
 import java.io.Serializable;
-import java.lang.reflect.Parameter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,7 +15,8 @@ import java.util.stream.Collectors;
 public class Menu implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public void login(Library library) {
+    public void login() {
+        Library library = Library.instance;
         Scanner scanner = new Scanner(System.in);
         String userName;
         String password;
@@ -149,8 +151,8 @@ public class Menu implements Serializable {
             System.out.print("4. See list of books that you haven't returned.");
             numberOfBooksUserHasBorrowed(user);
 
-            System.out.println("5. Search book on title.");
-            System.out.println("6. Search book on Author.");
+            System.out.println("5. Search for book (Title or ISBN).");
+            System.out.println("6. Search for books (Title, Author or ISBN).");
             System.out.println("7. Read more about a book.");
             System.out.println("9. Logg out");
 
@@ -172,11 +174,15 @@ public class Menu implements Serializable {
                     library.createReadingPausForUser();
                     break;
                 case "5":
-                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Title: ")));
+                    String bookSearchParameter = library.getInputFromUser("Search for book: ");
+                    Book searchedBook = library.getSpecificBook(bookSearchParameter);
+                    showBookSearchResults(bookSearchParameter, searchedBook);
                     library.createReadingPausForUser();
                     break;
                 case "6":
-                    library.showToUser(library.getSpecificBook(library.getInputFromUser("Author: ")));
+                    String booksSearchParameter = library.getInputFromUser("Search for book by title, author or ISBN: ");
+                    List<Book> searchedBooks = library.searchForBook(booksSearchParameter);
+                    showBookSearchResults(searchedBooks);
                     library.createReadingPausForUser();
                     break;
                 case "7":
@@ -203,9 +209,6 @@ public class Menu implements Serializable {
                     }
                     library.createReadingPausForUser();
                     break;
-                case "8":
-
-                    break;
                 case "9":
                     isRunning = false;
                     break;
@@ -213,6 +216,31 @@ public class Menu implements Serializable {
                     System.out.println("Invalid selection!");
             }
         }
+    }
+
+    private void showBookSearchResults(String searchParameter, Book searchedBook) {
+        Library library = Library.instance;
+
+        if (searchedBook != null)
+            library.showToUser(searchedBook);
+        else {
+            Message.showMessage("Couldn't find that book.", "red");
+            List<Book> bookOptions = library.searchForBook(searchParameter);
+            if (bookOptions.size() > 0) {
+                Message.showMessage("Is this what you wanted?", "default");
+                library.showToUser(bookOptions);
+            }
+        }
+    }
+
+    private void showBookSearchResults(List<Book> searchedBook) {
+        Library library = Library.instance;
+
+        if (searchedBook.size() > 0) {
+            Message.showMessage("\t\tSearch result", "default");
+            library.showToUser(searchedBook);
+        } else
+            Message.showMessage("Couldn't find a matching book or author", "red");
     }
 
     private void numberOfBooksUserHasBorrowed(User user) {
@@ -235,7 +263,7 @@ public class Menu implements Serializable {
             library.printoutTitle(book.getTitle() + " has been lent to you.");
         } else {
             library.printoutTitle("Book " + tempTitle + " not found, " +
-                    "no book has benn lent to you.");
+                    "no book has been lent to you");
         }
         library.createReadingPausForUser();
     }

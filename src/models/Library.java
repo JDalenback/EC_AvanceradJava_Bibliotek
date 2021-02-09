@@ -9,11 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Library implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static Library libraryInstance = null;
+    public static Library instance = setLibrary(LibraryFileUtils.deSerializeObject());;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
@@ -61,7 +60,11 @@ public class Library implements Serializable {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
             System.out.println("\t\t" + object);
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        } else System.out.println("\t\tDoesn't exist, please try again. ");
+        } else{
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+            Message.showMessage("\t\tDoesn't exist, please try again. ", "red");
+            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        }
     }
 
     public void showToUser(String message) {
@@ -150,11 +153,6 @@ public class Library implements Serializable {
                         book.getIsbn().contains(searchParameter))
                 .collect(Collectors.toList());
 
-        if (searchResult.size() > 0) {
-            showToUser(searchResult);
-        } else
-            System.out.println("Can't find that book in the library.");
-
         return searchResult;
     }
 
@@ -162,7 +160,6 @@ public class Library implements Serializable {
         List<Book> books = booksInLibrary
                 .stream()
                 .filter(book -> book.getTitle().matches(searchParameter) ||
-                        book.getAuthor().matches(searchParameter) ||
                         book.getIsbn().matches(searchParameter))
                 .collect(Collectors.toList());
 
@@ -402,11 +399,18 @@ public class Library implements Serializable {
         return users;
     }
 
+    public static Library getInstance(){
+        if(instance == null)
+            instance = new Library();
+        return instance;
+    }
 
-    public static Library getLibraryInstance() {
-        if (libraryInstance == null)
-            libraryInstance = new Library();
-        return libraryInstance;
+    private static Library setLibrary(Object object) {
+        if (object != null) {
+            return (Library) object;
+        }
+        else
+            return Library.getInstance();
     }
 
     public void populateMockupLibrary() {
@@ -421,7 +425,6 @@ public class Library implements Serializable {
         Book book2 = getSpecificBook("Återstoden av dagen");
         lendBookToUser(user, book);
         lendBookToUser(user, book2);
-        lendBookToUser(user, book);
     }
 
     private void readInBooks() {
