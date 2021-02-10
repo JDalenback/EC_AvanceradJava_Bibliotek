@@ -65,6 +65,23 @@ public class Library implements Serializable {
         }
 
     }
+    public void printAllBooksInLibrary() {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+        for (int i = 0; i < getBooksInLibrary().size(); i++) {
+            System.out.print("\t\t" + (i + 1) + ".\t" + getBooksInLibrary().get(i).getTitle() + ", written by "
+                    + getBooksInLibrary().get(i).getAuthor() + ". ISBN: " + getBooksInLibrary().get(i).getIsbn());
+            if (getBooksInLibrary().get(i).getBookTracker().isAvailable())
+                Message.messageWithColor("\t- this book is available.", "blue");
+            else
+                Message.messageWithColor(" - date of return " + dayPattern.format(getBooksInLibrary().get(i).getBookTracker().getDateOfReturn()), "red");
+        }
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+
+    }
+
 
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
@@ -364,6 +381,10 @@ public class Library implements Serializable {
             return (Library) object;
         } else
             return Library.getInstance();
+    }
+
+    public List<Book> getBooksInLibrary() {
+        return booksInLibrary;
     }
 
     public void populateMockupLibrary() {

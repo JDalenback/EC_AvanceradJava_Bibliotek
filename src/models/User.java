@@ -11,9 +11,11 @@ public class User implements Serializable {
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
 
-    public User(String name, String userID, boolean admin) {
+    Library library;
+
+    public User(String name, String password, boolean admin) {
         this.name = name;
-        this.userID = userID;
+        this.userID = password;
         this.admin = admin;
     }
 
@@ -35,7 +37,7 @@ public class User implements Serializable {
     public void printThisUser(User user) {
         if (this != null) {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-            System.out.println("\t\t" + user.getName()+", ID: "+user.getUserID()+".\n\t\tAdmin: "+user.isAdmin()+".\n\n\t\tBooks:");
+            System.out.println("\t\t" + user.getName()+".\n\t\tAdmin: "+user.isAdmin()+".\n\n\t\tBooks:");
             user.getMyBooks().forEach(book -> System.out.println("\t\t"+book));
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
         } else System.out.println("\t\tDoesn't exist, please try again. ");
