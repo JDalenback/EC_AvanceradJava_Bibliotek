@@ -1,7 +1,6 @@
 package models;
 
 import Utils.LibraryFileUtils;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
 import java.util.*;
@@ -13,16 +12,16 @@ import java.util.stream.Collectors;
 
 public class Library implements Serializable {
     private static final long serialVersionUID = 1L;
-    public static Library instance = setLibrary(LibraryFileUtils.deSerializeObject());
-    ;
+
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
 
+    public static Library instance = setLibrary(LibraryFileUtils.deSerializeObject());
+
     private Library() {
         initializeWatchers();
     }
-
 
     private void initializeWatchers() {
         watch("insert", event ->
@@ -48,52 +47,8 @@ public class Library implements Serializable {
                 watcher.handle(new LibraryEvent(event, data)));
     }
 
-
-    public void showToUser(List<?> list) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println("\t\t" + (i + 1) + ".\t" + list.get(i));
-        }
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-    }
-
-    public void showToUser(Object object) {
-        if (object != null) {
-            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-            System.out.println("\t\t" + object);
-            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        } else {
-            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-            Message.showMessage("\t\tDoesn't exist, please try again. ", "red");
-            System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        }
-    }
-
-    public void showToUser(String message) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        System.out.println("\t\t" + message);
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-    }
-
-    public void showToUser(String message, String color) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        Message.showMessage("\t\t" + message, color);
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-    }
-
     public void showAllBooksInLibrary() {
-        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-
-        for (int i = 0; i < getBooksInLibrary().size(); i++) {
-            System.out.print("\t\t" + (i + 1) + ".\t" + getBooksInLibrary().get(i).getTitle() + ", written by "
-                    + getBooksInLibrary().get(i).getAuthor()+". ISBN: "+getBooksInLibrary().get(i).getIsbn());
-            if(getBooksInLibrary().get(i).getBookTracker().isAvailable())
-            Message.showMessage("\t- this book is available.", "blue");
-            else Message.showMessage(" - date of return "+dayPattern.format(getBooksInLibrary().get(i).getBookTracker().getDateOfReturn()), "red");
-        }
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-
+        Message.systemMessage(booksInLibrary);
     }
 
     public void sortByTitle() {
@@ -110,6 +65,23 @@ public class Library implements Serializable {
         }
 
     }
+    public void printAllBooksInLibrary() {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+        for (int i = 0; i < getBooksInLibrary().size(); i++) {
+            System.out.print("\t\t" + (i + 1) + ".\t" + getBooksInLibrary().get(i).getTitle() + ", written by "
+                    + getBooksInLibrary().get(i).getAuthor() + ". ISBN: " + getBooksInLibrary().get(i).getIsbn());
+            if (getBooksInLibrary().get(i).getBookTracker().isAvailable())
+                Message.messageWithColor("\t- this book is available.", "blue");
+            else
+                Message.messageWithColor(" - date of return " + dayPattern.format(getBooksInLibrary().get(i).getBookTracker().getDateOfReturn()), "red");
+        }
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+
+    }
+
 
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
@@ -134,12 +106,17 @@ public class Library implements Serializable {
     }
 
     public void showAvailableBooksInLibrary() {
+        List<Book> availableBooks = getAvailableBooks();
+
+        Message.systemMessage(availableBooks);
+    }
+
+    public List<Book> getAvailableBooks() {
         List<Book> availableBooks = booksInLibrary
                 .stream()
                 .filter(book -> (book.getBookTracker().isAvailable()))
                 .collect(Collectors.toList());
-
-        showToUser(availableBooks);
+        return availableBooks;
     }
 
     public void showAllLentBooksInLibrary() {
@@ -148,7 +125,7 @@ public class Library implements Serializable {
                 .filter(book -> !(book.getBookTracker().isAvailable()))
                 .collect(Collectors.toList());
 
-        showToUser(lentBooks);
+        Message.systemMessage(lentBooks);
     }
 
     public void showAllLateBooks() {
@@ -158,12 +135,12 @@ public class Library implements Serializable {
                 .filter(book -> book.getBookTracker().getDateOfReturn() > 0 && book.getBookTracker().getDateOfReturn() < currentTime)
                 .collect(Collectors.toList());
 
-        showToUser(lateBooks);
+        Message.systemMessage(lateBooks);
     }
 
 
     public void showAllUsers() {
-        showToUser(users);
+        Message.systemMessage(users);
     }
 
     public List<Book> searchForBook(String searchParameter) {
@@ -272,12 +249,12 @@ public class Library implements Serializable {
         long timeNow = System.currentTimeMillis();
         System.out.print("\t-\t");
         if (timeNow > lendingPeriodInMs) {
-            Message.showMessage("Your book is late! Return to the library immediately.", "red");
+            Message.messageWithColor("Your book is late! Return to the library immediately.", "red");
         } else if (lendingPeriodInMs - timeNow < 259200000) { // 259200000 ms = three days
-            Message.showMessage("Your loan period is almost over. " +
+            Message.messageWithColor("Your loan period is almost over. " +
                     String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            Message.showMessage(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "blue");
+            Message.messageWithColor(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
         }
     }
 
@@ -287,7 +264,7 @@ public class Library implements Serializable {
                 .filter(user -> !user.isAdmin())
                 .map(User::getName)
                 .collect(Collectors.toList());
-        showToUser(tempTest);
+        Message.systemMessage(tempTest);
     }
 
     public void addUser() {
@@ -310,36 +287,21 @@ public class Library implements Serializable {
             if (admin.equalsIgnoreCase("yes"))
                 adminBoolean = true;
 
-            if (!checkIfUserNameExists(new User(name, userID, adminBoolean))) {
+            if (!checkIfUserNameExists(name)) {
                 User newUser = new User(name, userID, adminBoolean);
                 users.add(newUser);
                 System.out.println("\n" + name + " is now added to the system \n");
                 callWatchers("insert", newUser);
                 userAdd = true;
             } else {
-                Message.showMessage("Username already exists. You have to choose another", "red");
+                Message.messageWithColor("Username already exists. You have to choose another", "red");
             }
         }
 
     }
 
-    public boolean checkIfUserNameExists(Object name) {
-        Boolean userExists = false;
-        String[] nameSplit = name.toString().split("\'");
-        List<Object> tempName = new ArrayList<>(users);
-        for (Object item : tempName) {
-            try {
-                if (item.toString().contains(nameSplit[1])) {
-                    userExists = true;
-                    //throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
-                }
-            } catch (NullPointerException ignored) {
-
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-        return userExists;
+    public boolean checkIfUserNameExists(String name) {
+        return users.stream().anyMatch(user -> user.getName().equals(name));
     }
 
     public String makeValidUserID() {
@@ -354,7 +316,7 @@ public class Library implements Serializable {
                 System.out.println("Password accepted\n");
                 isRunning = false;
             } else {
-                Message.showMessage("\nInvalid content in your UserID!", "red");
+                Message.messageWithColor("\nInvalid content in your UserID!", "red");
             }
         }
         return userID;
@@ -363,10 +325,10 @@ public class Library implements Serializable {
     public void removeUser(User user) {
         if (user != null) {
             users.remove(user);
-            showToUser(user.getName() + " was removed.");
+            Message.systemMessage(user.getName() + " was removed.");
             callWatchers("delete", users);
         } else {
-            showToUser("Could not find that user.");
+            Message.systemMessage("Could not find that user.");
         }
     }
 
@@ -383,7 +345,7 @@ public class Library implements Serializable {
         if (user.isPresent()) {
             System.out.println("\n--- Name: " + userName + "\n, UserID: " + user.get().getUserID() + "\n, Books: " + user.get().getMyBooks() + "\n");
         } else
-            Message.showMessage("Sorry, user not found.", "red");
+            Message.messageWithColor("Sorry, user not found.", "red");
     }
 
     public User getSpecificUser(String name) {
