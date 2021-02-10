@@ -189,20 +189,20 @@ public class Menu implements Serializable {
                     System.out.println("\n\t\t-----------------------------------------------------------------" +
                             "-----------------------------------------------------");
                     if (book != null) {
-                        Message.messageWithColor("\n\t\tWritten by: "+book.getAuthor(),"yellow");
+                        Message.messageWithColor("\n\t\tWritten by: " + book.getAuthor(), "yellow");
                         Matcher matcher = pattern.matcher(book.getDescription());
                         while (matcher.find()) {
                             System.out.println("\t\t" + matcher.group(0).trim());
                         }
                         if (book.getBookTracker().isAvailable()) {
-                            Message.messageWithColor("\n\t\tThe book is available.","green");
-                        }else {
+                            Message.messageWithColor("\n\t\tThe book is available.", "green");
+                        } else {
                             DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
                             Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
-                            Message.messageWithColor("\n\t\tThe book is not available. Should be returned "+dayPattern.format(returnDay),"red");
+                            Message.messageWithColor("\n\t\tThe book is not available. Should be returned " + dayPattern.format(returnDay), "red");
                         }
                     } else {
-                        Message.messageWithColor("\n\t\tBook " + tempTitle + " was not found!","red");
+                        Message.messageWithColor("\n\t\tBook " + tempTitle + " was not found!", "red");
                     }
                     System.out.println("\t\t-----------------------------------------------------------------" +
                             "-----------------------------------------------------");
@@ -252,34 +252,68 @@ public class Menu implements Serializable {
 
     private void lendABook(Library library, User user) {
         String tempTitle;
-        Book book;
+        Book book = null;
         library.printoutTitle("Lend a book:");
+        List<Book> availableBooks = library.getAvailableBooks();
         library.showAvailableBooksInLibrary();
         tempTitle = library.getInputFromUser("Title of book: ");
-        book = library.getSpecificBook(tempTitle);
+
+
+        if(userInputIsANumber(tempTitle)){
+            int index = Integer.parseInt(tempTitle) - 1;
+            if (isIndexInRangeOfList(availableBooks, index)) {
+                book = library.getSpecificBook(availableBooks.get(index).getTitle());
+            }
+        }else {
+            book = library.getSpecificBook(tempTitle);
+        }
+
         if (book != null) {
             library.lendBookToUser(user, book);
-            library.showToUser(book.getTitle() + " has been lent to you.","green");
+            library.showToUser(book.getTitle() + " has been lent to you.", "green");
         } else {
             library.showToUser("Book " + tempTitle + " not found, " +
                     "no book has been lent to you", "red");
         }
+
         library.createReadingPauseForUser();
     }
 
     private void returnABook(Library library, User user) {
         String tempTitle;
-        Book book;
+        Book book = null;
         library.printoutTitle("Return a book:");
         user.printMyBooks();
         tempTitle = library.getInputFromUser("Title of book: ");
-        book = library.getSpecificBook(tempTitle);
+
+        if(userInputIsANumber(tempTitle)){
+            int index = Integer.parseInt(tempTitle) - 1;
+            if (isIndexInRangeOfList(user.getMyBooks(), index)) {
+                book = library.getSpecificBook(user.getMyBooks().get(index).getTitle());
+            }
+        }else {
+            book = library.getSpecificBook(tempTitle);
+        }
+
         if (book != null) {
             library.returnBookFromUser(user, book);
-            library.showToUser(book.getTitle() + " has been returned.","green");
+            library.showToUser(book.getTitle() + " has been returned.", "green");
         } else {
-            library.showToUser("Book " + tempTitle + " not found, no book returned.","red");
+            library.showToUser("Book " + tempTitle + " not found, no book returned.", "red");
         }
         library.createReadingPauseForUser();
+    }
+
+    private boolean userInputIsANumber(String userInput) {
+        try {
+            Integer.parseInt(userInput);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isIndexInRangeOfList(List<Book> availableBooks, int index) {
+        return index < (availableBooks.size()) && index >= 0;
     }
 }

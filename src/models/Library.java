@@ -22,6 +22,10 @@ public class Library implements Serializable {
         initializeWatchers();
     }
 
+    public void showBookAtIndex(int index) {
+        System.out.println(booksInLibrary.get(index));
+    }
+
 
     private void initializeWatchers() {
         watch("insert", event ->
@@ -50,7 +54,7 @@ public class Library implements Serializable {
 
     public void showToUser(String message, String color) {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        Message.messageWithColor("\t\t"+message,color);
+        Message.messageWithColor("\t\t" + message, color);
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
@@ -72,6 +76,7 @@ public class Library implements Serializable {
         }
 
     }
+
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
 
@@ -84,7 +89,7 @@ public class Library implements Serializable {
             String[] authorRemoveIsbn = author.split("ISBN");
             String isbn = authorRemoveIsbn[1].substring(2);
 
-            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title +  "ISBN: " + isbn);
+            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title + "ISBN: " + isbn);
         }
 
         Collections.sort(booksByAuthor);
@@ -95,12 +100,17 @@ public class Library implements Serializable {
     }
 
     public void showAvailableBooksInLibrary() {
+        List<Book> availableBooks = getAvailableBooks();
+
+        Message.systemMessage(availableBooks);
+    }
+
+    public List<Book> getAvailableBooks() {
         List<Book> availableBooks = booksInLibrary
                 .stream()
                 .filter(book -> (book.getBookTracker().isAvailable()))
                 .collect(Collectors.toList());
-
-        Message.systemMessage(availableBooks);
+        return availableBooks;
     }
 
     public void showAllLentBooksInLibrary() {
@@ -278,7 +288,7 @@ public class Library implements Serializable {
             if (admin.equalsIgnoreCase("yes"))
                 adminBoolean = true;
 
-            if (!checkIfUserNameExists(new User(name, userID, adminBoolean))) {
+            if (!checkIfUserNameExists(name)) {
                 User newUser = new User(name, userID, adminBoolean);
                 users.add(newUser);
                 System.out.println("\n" + name + " is now added to the system \n");
@@ -291,24 +301,8 @@ public class Library implements Serializable {
 
     }
 
-    public boolean checkIfUserNameExists(Object name) {
-        Boolean userExists = false;
-        String[] nameSplit = name.toString().split("\'");
-        List<Object> tempName = new ArrayList<>(users);
-        for (Object item : tempName) {
-            try {
-                if (item.toString().contains(nameSplit[1])) {
-                    userExists = true;
-                    //throw new Exception("NAME ALREADY BOUND TO USER. CHOOSE ANOTHER NAME.");
-                }
-            } catch (NullPointerException ignored) {
-
-            } catch (Exception e) {
-                //e.printStackTrace();
-                System.out.println(e);
-            }
-        }
-        return userExists;
+    public boolean checkIfUserNameExists(String name) {
+        return users.stream().anyMatch(user -> user.getName().equals(name));
     }
 
     public String makeValidUserID() {
@@ -375,7 +369,7 @@ public class Library implements Serializable {
         Scanner scanner = new Scanner(System.in);
         System.out.print("\nPress enter to continue.");
         String nothing = scanner.nextLine();
-        nothing="";
+        nothing = "";
         System.out.print(nothing);
     }
 
@@ -383,8 +377,8 @@ public class Library implements Serializable {
         return users;
     }
 
-    public static Library getInstance(){
-        if(instance == null)
+    public static Library getInstance() {
+        if (instance == null)
             instance = new Library();
         return instance;
     }
@@ -392,8 +386,7 @@ public class Library implements Serializable {
     private static Library setLibrary(Object object) {
         if (object != null) {
             return (Library) object;
-        }
-        else
+        } else
             return Library.getInstance();
     }
 

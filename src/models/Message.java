@@ -40,14 +40,10 @@ public class Message {
 
     private static String getColor(String color) {
         switch (color) {
-            case "red":
-                return ANSI_RED;
-            case "green":
-                return ANSI_GREEN;
-            case "yellow":
-                return ANSI_YELLOW;
-            default:
-                return ANSI_RESET;
+            case "red": return ANSI_RED;
+            case "green": return ANSI_GREEN;
+            case "yellow": return ANSI_YELLOW;
+            default: return ANSI_RESET;
         }
     }
 
