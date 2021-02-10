@@ -65,6 +65,7 @@ public class Library implements Serializable {
         }
 
     }
+
     public void printAllBooksInLibrary() {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
@@ -120,22 +121,65 @@ public class Library implements Serializable {
     }
 
     public void showAllLentBooksInLibrary() {
-        List<Book> lentBooks = booksInLibrary
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        long currentTime = System.currentTimeMillis();
+        List<User> lentBooks = users
                 .stream()
-                .filter(book -> !(book.getBookTracker().isAvailable()))
+                .filter(s -> s.getMyBooks().size() > 0)
+                .sorted((Comparator.comparing(User::getName)))
                 .collect(Collectors.toList());
 
-        Message.systemMessage(lentBooks);
+        System.out.println("\t\t----------------------------------------------------------" +
+                "------------------------------------------------------------");
+        for (int x = 0; x < lentBooks.size(); x++) {
+            for (int j = 0; j < lentBooks.get(x).getMyBooks().size(); j++) {
+                System.out.print(("\t\tTitle: " + lentBooks.get(x).getMyBooks().get(j).getTitle() +
+                        ". Author: " + lentBooks.get(x).getMyBooks().get(j).getAuthor() +
+                        ". ISBN: " + lentBooks.get(x).getMyBooks().get(j).getIsbn() +
+                        " - Lender: " + lentBooks.get(x).getName() + ". Should be returned: "));
+                if (lentBooks.get(x).getMyBooks()
+                        .get(j).getBookTracker().getDateOfReturn() < currentTime) {
+                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "red");
+                } else if (lentBooks.get(x).getMyBooks()
+                        .get(j).getBookTracker().getDateOfReturn() - currentTime < 259200000) {
+                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "yellow");
+                } else {
+                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "green");
+                }
+            }
+            if (x + 1 != lentBooks.size()) {
+                System.out.println();
+            }
+        }
+        System.out.println("\t\t----------------------------------------------------------" +
+                "------------------------------------------------------------");
     }
 
     public void showAllLateBooks() {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         long currentTime = System.currentTimeMillis();
-        List<Book> lateBooks = booksInLibrary
+        List<User> lentBooks = users
                 .stream()
-                .filter(book -> book.getBookTracker().getDateOfReturn() > 0 && book.getBookTracker().getDateOfReturn() < currentTime)
+                .filter(s -> s.getMyBooks().size() > 0)
                 .collect(Collectors.toList());
 
-        Message.systemMessage(lateBooks);
+        List<String> lateBooksToBeShown = new ArrayList<>();
+        for (User lentBook : lentBooks) {
+            for (int j = 0; j < lentBook.getMyBooks().size(); j++) {
+                if (lentBook.getMyBooks().get(j).getBookTracker().getDateOfReturn() < currentTime) {
+                    lateBooksToBeShown.add("Title: " + lentBook.getMyBooks().get(j).getTitle() +
+                            ". Author: " + lentBook.getMyBooks().get(j).getAuthor() +
+                            ". ISBN: " + lentBook.getMyBooks().get(j).getIsbn() +
+                            " - Lender: " + lentBook.getName() +
+                            ". Should be returned: " + dayPattern.format(lentBook.getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()));
+                }
+            }
+        }
+        Message.systemMessage(lateBooksToBeShown);
     }
 
 
@@ -227,7 +271,7 @@ public class Library implements Serializable {
         System.out.println("\nAdd new book.");
         bookTitle = getInputFromUser("Title: ");
         author = getInputFromUser("Author: ");
-        isbn =getInputFromUser("ISBN: ");
+        isbn = getInputFromUser("ISBN: ");
         description = getInputFromUser("Description: ");
 
         Book newBook = new Book(bookTitle, author, isbn, description);
