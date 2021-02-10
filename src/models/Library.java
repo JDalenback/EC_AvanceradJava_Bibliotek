@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 
 public class Library implements Serializable {
     private static final long serialVersionUID = 1L;
-    public static Library instance = setLibrary(LibraryFileUtils.deSerializeObject());;
+    public static Library instance = setLibrary(LibraryFileUtils.deSerializeObject());
+    ;
     private List<Book> booksInLibrary = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private Map<String, List<LibraryWatcher>> watchers = new HashMap<>();
@@ -60,7 +61,7 @@ public class Library implements Serializable {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
             System.out.println("\t\t" + object);
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        } else{
+        } else {
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
             Message.showMessage("\t\tDoesn't exist, please try again. ", "red");
             System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
@@ -75,13 +76,14 @@ public class Library implements Serializable {
 
     public void showToUser(String message, String color) {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        Message.showMessage("\t\t"+message,color);
+        Message.showMessage("\t\t" + message, color);
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void showAllBooksInLibrary() {
         showToUser(booksInLibrary);
     }
+
     public void sortByTitle() {
         List<String> booksByTitle = new ArrayList<>();
 
@@ -96,6 +98,7 @@ public class Library implements Serializable {
         }
 
     }
+
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
 
@@ -108,7 +111,7 @@ public class Library implements Serializable {
             String[] authorRemoveIsbn = author.split("ISBN");
             String isbn = authorRemoveIsbn[1].substring(2);
 
-            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title +  "ISBN: " + isbn);
+            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title + "ISBN: " + isbn);
         }
 
         Collections.sort(booksByAuthor);
@@ -215,10 +218,8 @@ public class Library implements Serializable {
     }
 
     public void removeBookFromLibrary() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\nRemove book.");
-        System.out.print("Title: ");
-        String title = scanner.nextLine();
+        String title = getInputFromUser("Title: ");
         Book book = getSpecificBook(title);
         if (book != null) {
             booksInLibrary.remove(book);
@@ -229,21 +230,16 @@ public class Library implements Serializable {
     }
 
     public void addNewBookToLibrary() {
-        Scanner scanner = new Scanner(System.in);
         String bookTitle;
         String author;
         String isbn;
         String description;
 
         System.out.println("\nAdd new book.");
-        System.out.print("Title: ");
-        bookTitle = scanner.nextLine();
-        System.out.print("Autor: ");
-        author = scanner.nextLine();
-        System.out.print("ISBN: ");
-        isbn = scanner.nextLine();
-        System.out.print("Description: ");
-        description = scanner.nextLine();
+        bookTitle = getInputFromUser("Title: ");
+        author = getInputFromUser("Author: ");
+        isbn =getInputFromUser("ISBN: ");
+        description = getInputFromUser("Description: ");
 
         Book newBook = new Book(bookTitle, author, isbn, description);
         booksInLibrary.add(newBook);
@@ -289,14 +285,14 @@ public class Library implements Serializable {
         boolean adminBoolean = false;
         boolean userAdd = false;
         while (!userAdd) {
-            Scanner scan = new Scanner(System.in);
 
-            System.out.print("---Create a new USER---\n\nName: ");
-            name = scan.nextLine();
-            System.out.print("UserID: ");
+            name = getInputFromUser("---Create a new USER---\n\nName: ");
+            System.out.print("Your UserID must be at least 8 character long.\n" +
+                    "Containing at lest one special character @$!%*?&, one uppercase, " +
+                    "one lowercase and one number 0-9.\n");
+
             userID = makeValidUserID();
-            System.out.println("Admin? Enter \"yes\" or \"no\"");
-            admin = scan.nextLine();
+            admin = getInputFromUser("Admin? Enter \"yes\" or \"no\"");
 
 
             if (admin.equalsIgnoreCase("yes"))
@@ -328,7 +324,6 @@ public class Library implements Serializable {
             } catch (NullPointerException ignored) {
 
             } catch (Exception e) {
-                //e.printStackTrace();
                 System.out.println(e);
             }
         }
@@ -337,15 +332,11 @@ public class Library implements Serializable {
 
     public String makeValidUserID() {
         Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
-        Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         String userID = null;
-        System.out.println("Chose a UserID.");
         while (isRunning) {
-            System.out.print("Your UserID must be at least 8 character long.\n" +
-                    "Containing at lest one special character @$!%*?&, one uppercase, " +
-                    "one lowercase and one number 0-9.\nUserID: ");
-            userID = scanner.nextLine();
+
+            userID = getInputFromUser("UserID: ");
             Matcher matcher = pattern.matcher(userID);
             if (matcher.find()) {
                 System.out.println("Password accepted\n");
@@ -371,7 +362,7 @@ public class Library implements Serializable {
         Scanner scan = new Scanner(System.in);
         System.out.print("\n" + input);
         String tempName = scan.nextLine();
-        System.out.println();
+        //System.out.println();
         return tempName;
     }
 
@@ -396,10 +387,8 @@ public class Library implements Serializable {
     }
 
     public void createReadingPauseForUser() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nPress enter to continue.");
-        String nothing = scanner.nextLine();
-        nothing="";
+        String nothing = getInputFromUser("\nPress enter to continue.");
+        nothing = "";
         System.out.print(nothing);
     }
 
@@ -407,8 +396,8 @@ public class Library implements Serializable {
         return users;
     }
 
-    public static Library getInstance(){
-        if(instance == null)
+    public static Library getInstance() {
+        if (instance == null)
             instance = new Library();
         return instance;
     }
@@ -416,8 +405,7 @@ public class Library implements Serializable {
     private static Library setLibrary(Object object) {
         if (object != null) {
             return (Library) object;
-        }
-        else
+        } else
             return Library.getInstance();
     }
 
