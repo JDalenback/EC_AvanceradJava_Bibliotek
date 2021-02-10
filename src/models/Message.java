@@ -38,6 +38,12 @@ public class Message {
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
+    public static void systemMessageWithColor(String message, String color) {
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+        messageWithColor("\t\t" + message, color);
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+    }
+
     private static String getColor(String color) {
         switch (color) {
             case "red": return ANSI_RED;

@@ -23,11 +23,6 @@ public class Library implements Serializable {
         initializeWatchers();
     }
 
-    public void showBookAtIndex(int index) {
-        System.out.println(booksInLibrary.get(index));
-    }
-
-
     private void initializeWatchers() {
         watch("insert", event ->
                 LibraryFileUtils.serializeObject(this));
@@ -50,13 +45,6 @@ public class Library implements Serializable {
     public void callWatchers(String event, Object data) {
         watchers.get(event).forEach(watcher ->
                 watcher.handle(new LibraryEvent(event, data)));
-    }
-
-
-    public void showToUser(String message, String color) {
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
-        Message.messageWithColor("\t\t" + message, color);
-        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
     }
 
     public void showAllBooksInLibrary() {

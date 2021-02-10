@@ -270,9 +270,9 @@ public class Menu implements Serializable {
 
         if (book != null) {
             library.lendBookToUser(user, book);
-            library.showToUser(book.getTitle() + " has been lent to you.", "green");
+            Message.systemMessageWithColor(book.getTitle() + " has been lent to you.", "green");
         } else {
-            library.showToUser("Book " + tempTitle + " not found, " +
+            Message.systemMessageWithColor("Book " + tempTitle + " not found, " +
                     "no book has been lent to you", "red");
         }
 
@@ -297,9 +297,9 @@ public class Menu implements Serializable {
 
         if (book != null) {
             library.returnBookFromUser(user, book);
-            library.showToUser(book.getTitle() + " has been returned.", "green");
+            Message.systemMessageWithColor(book.getTitle() + " has been returned.", "green");
         } else {
-            library.showToUser("Book " + tempTitle + " not found, no book returned.", "red");
+            Message.systemMessageWithColor("Book " + tempTitle + " not found, no book returned.", "red");
         }
         library.createReadingPauseForUser();
     }
