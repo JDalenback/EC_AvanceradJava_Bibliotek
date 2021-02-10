@@ -75,6 +75,7 @@ public class Menu implements Serializable {
             System.out.println("9. See lender by name.");
             System.out.println("10. Add user to library");
             System.out.println("11. Remove user from library");
+            System.out.println("12. Show all books in library");
             System.out.println("15. Logg out");
             chose = scanner.nextLine();
             switch (chose) {
@@ -124,6 +125,10 @@ public class Menu implements Serializable {
                     library.removeUser(library.getSpecificUser(userName));
                     library.createReadingPauseForUser();
                     break;
+                case "12":
+                    library.showAllBooksInLibrary();
+                    library.createReadingPauseForUser();
+                    break;
                 case "15":
                     isRunning = false;
                     break;
@@ -149,6 +154,7 @@ public class Menu implements Serializable {
             System.out.println("5. Search for book (Title or ISBN).");
             System.out.println("6. Search for books (Title, Author or ISBN).");
             System.out.println("7. Read more about a book.");
+            System.out.println("8. Show all books in library");
             System.out.println("9. Logg out");
 
             chose = scanner.nextLine();
@@ -195,7 +201,7 @@ public class Menu implements Serializable {
                             System.out.println("\t\t" + matcher.group(0).trim());
                         }
                         if (book.getBookTracker().isAvailable()) {
-                            Message.showMessage("\t\tThe book is available.", "green");
+                            Message.showMessage("\t\tThe book is available.", "blue");
                         } else {
                             DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
                             Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
@@ -207,6 +213,10 @@ public class Menu implements Serializable {
                     }
                     System.out.println("\t\t-----------------------------------------------------------------" +
                             "-----------------------------------------------------");
+                    library.createReadingPauseForUser();
+                    break;
+                case "8":
+                    library.showAllBooksInLibrary();
                     library.createReadingPauseForUser();
                     break;
                 case "9":
@@ -260,7 +270,7 @@ public class Menu implements Serializable {
         book = library.getSpecificBook(tempTitle);
         if (book != null) {
             library.lendBookToUser(user, book);
-            library.showToUser(book.getTitle() + " has been lent to you.","green");
+            library.showToUser(book.getTitle() + " has been lent to you.","blue");
         } else {
             library.showToUser("Book " + tempTitle + " not found, " +
                     "no book has been lent to you", "red");
@@ -277,7 +287,7 @@ public class Menu implements Serializable {
         book = library.getSpecificBook(tempTitle);
         if (book != null) {
             library.returnBookFromUser(user, book);
-            library.showToUser(book.getTitle() + " has been returned.","green");
+            library.showToUser(book.getTitle() + " has been returned.","blue");
         } else {
             library.showToUser("Book " + tempTitle + " not found, no book returned.","red");
         }

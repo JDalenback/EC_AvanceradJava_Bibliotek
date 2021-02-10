@@ -1,6 +1,7 @@
 package models;
 
 import Utils.LibraryFileUtils;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
 import java.util.*;
@@ -81,7 +82,18 @@ public class Library implements Serializable {
     }
 
     public void showAllBooksInLibrary() {
-        showToUser(booksInLibrary);
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+        for (int i = 0; i < getBooksInLibrary().size(); i++) {
+            System.out.print("\t\t" + (i + 1) + ".\t" + getBooksInLibrary().get(i).getTitle() + ", written by "
+                    + getBooksInLibrary().get(i).getAuthor()+". ISBN: "+getBooksInLibrary().get(i).getIsbn());
+            if(getBooksInLibrary().get(i).getBookTracker().isAvailable())
+            Message.showMessage("\t- this book is available.", "blue");
+            else Message.showMessage(" - date of return "+dayPattern.format(getBooksInLibrary().get(i).getBookTracker().getDateOfReturn()), "red");
+        }
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
     }
 
     public void sortByTitle() {
@@ -265,7 +277,7 @@ public class Library implements Serializable {
             Message.showMessage("Your loan period is almost over. " +
                     String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            Message.showMessage(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
+            Message.showMessage(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "blue");
         }
     }
 
@@ -407,6 +419,10 @@ public class Library implements Serializable {
             return (Library) object;
         } else
             return Library.getInstance();
+    }
+
+    public List<Book> getBooksInLibrary() {
+        return booksInLibrary;
     }
 
     public void populateMockupLibrary() {
