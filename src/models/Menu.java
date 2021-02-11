@@ -243,8 +243,6 @@ public class Menu implements Serializable {
     }
 
     private void showBookSearchResults(List<Book> searchedBook) {
-        Library library = Library.instance;
-
         if (searchedBook.size() > 0) {
             Message.messageWithColor("\t\tSearch result", "default");
             Message.systemMessage(searchedBook);
@@ -269,9 +267,9 @@ public class Menu implements Serializable {
         tempTitle = library.getInputFromUser("Title of book: ");
 
 
-        if(userInputIsANumber(tempTitle)){
+        if(isNumber(tempTitle)){
             int index = Integer.parseInt(tempTitle) - 1;
-            if (isIndexInRangeOfList(availableBooks, index)) {
+            if (isInRangeOfList(availableBooks, index)) {
                 book = library.getSpecificBook(availableBooks.get(index).getTitle());
             }
         }else {
@@ -296,9 +294,9 @@ public class Menu implements Serializable {
         user.printMyBooks();
         tempTitle = library.getInputFromUser("Title of book: ");
 
-        if(userInputIsANumber(tempTitle)){
+        if(isNumber(tempTitle)){
             int index = Integer.parseInt(tempTitle) - 1;
-            if (isIndexInRangeOfList(user.getMyBooks(), index)) {
+            if (isInRangeOfList(user.getMyBooks(), index)) {
                 book = library.getSpecificBook(user.getMyBooks().get(index).getTitle());
             }
         }else {
@@ -314,7 +312,7 @@ public class Menu implements Serializable {
         library.createReadingPauseForUser();
     }
 
-    private boolean userInputIsANumber(String userInput) {
+    private boolean isNumber(String userInput) {
         try {
             Integer.parseInt(userInput);
             return true;
@@ -323,7 +321,7 @@ public class Menu implements Serializable {
         }
     }
 
-    private boolean isIndexInRangeOfList(List<Book> availableBooks, int index) {
+    private boolean isInRangeOfList(List<Book> availableBooks, int index) {
         return index < (availableBooks.size()) && index >= 0;
     }
 }
