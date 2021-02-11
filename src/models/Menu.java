@@ -243,8 +243,6 @@ public class Menu implements Serializable {
     }
 
     private void showBookSearchResults(List<Book> searchedBook) {
-        Library library = Library.instance;
-
         if (searchedBook.size() > 0) {
             Message.messageWithColor("\t\tSearch result", "default");
             Message.systemMessage(searchedBook);

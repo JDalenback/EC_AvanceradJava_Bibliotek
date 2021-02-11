@@ -11,7 +11,6 @@ public class User implements Serializable {
     private boolean admin;
     private List<Book> myBooks = new ArrayList<>();
 
-    Library library;
 
     public User(String name, String password, boolean admin) {
         this.name = name;
