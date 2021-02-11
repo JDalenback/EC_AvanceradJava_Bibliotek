@@ -123,7 +123,7 @@ public class Library implements Serializable {
     public void showAllLentBooksInLibrary() {
         DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         long currentTime = System.currentTimeMillis();
-        List<User> lentBooks = users
+        List<User> usersAndLentBooks = users
                 .stream()
                 .filter(s -> s.getMyBooks().size() > 0)
                 .sorted((Comparator.comparing(User::getName)))
@@ -131,26 +131,30 @@ public class Library implements Serializable {
 
         System.out.println("\t\t----------------------------------------------------------" +
                 "------------------------------------------------------------");
-        for (int x = 0; x < lentBooks.size(); x++) {
-            for (int j = 0; j < lentBooks.get(x).getMyBooks().size(); j++) {
-                System.out.print(("\t\tTitle: " + lentBooks.get(x).getMyBooks().get(j).getTitle() +
-                        ". Author: " + lentBooks.get(x).getMyBooks().get(j).getAuthor() +
-                        ". ISBN: " + lentBooks.get(x).getMyBooks().get(j).getIsbn() +
-                        " - Lender: " + lentBooks.get(x).getName() + ". Should be returned: "));
-                if (lentBooks.get(x).getMyBooks()
+        for (int x = 0; x < usersAndLentBooks.size(); x++) {
+
+            usersAndLentBooks.get(x).getMyBooks().sort(Comparator.<Book>comparingLong(o1 -> o1.getBookTracker()
+                    .getDateOfReturn()).thenComparingLong(o2 -> o2.getBookTracker().getDateOfReturn()));
+
+            for (int j = 0; j < usersAndLentBooks.get(x).getMyBooks().size(); j++) {
+                System.out.print(("\t\tTitle: " + usersAndLentBooks.get(x).getMyBooks().get(j).getTitle() +
+                        ". Author: " + usersAndLentBooks.get(x).getMyBooks().get(j).getAuthor() +
+                        ". ISBN: " + usersAndLentBooks.get(x).getMyBooks().get(j).getIsbn() +
+                        " - Lender: " + usersAndLentBooks.get(x).getName() + ". Should be returned: "));
+                if (usersAndLentBooks.get(x).getMyBooks()
                         .get(j).getBookTracker().getDateOfReturn() < currentTime) {
-                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
                             .get(j).getBookTracker().getDateOfReturn()), "red");
-                } else if (lentBooks.get(x).getMyBooks()
+                } else if (usersAndLentBooks.get(x).getMyBooks()
                         .get(j).getBookTracker().getDateOfReturn() - currentTime < 259200000) {
-                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
                             .get(j).getBookTracker().getDateOfReturn()), "yellow");
                 } else {
-                    Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
                             .get(j).getBookTracker().getDateOfReturn()), "blue");
                 }
             }
-            if (x + 1 != lentBooks.size()) {
+            if (x + 1 != usersAndLentBooks.size()) {
                 System.out.println();
             }
         }
