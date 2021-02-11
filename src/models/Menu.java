@@ -201,7 +201,7 @@ public class Menu implements Serializable {
                             System.out.println("\t\t" + matcher.group(0).trim());
                         }
                         if (book.getBookTracker().isAvailable()) {
-                            Message.messageWithColor("\n\t\tThe book is available.", "green");
+                            Message.messageWithColor("\n\t\tThe book is available.", "blue");
                         } else {
                             DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
                             Date returnDay = new Date(book.getBookTracker().getDateOfReturn());
@@ -280,7 +280,7 @@ public class Menu implements Serializable {
 
         if (book != null) {
             library.lendBookToUser(user, book);
-            Message.systemMessageWithColor(book.getTitle() + " has been lent to you.", "green");
+            Message.systemMessageWithColor(book.getTitle() + " has been lent to you.", "blue");
         } else {
             Message.systemMessageWithColor("Book " + tempTitle + " not found, " +
                     "no book has been lent to you", "red");
@@ -307,7 +307,7 @@ public class Menu implements Serializable {
 
         if (book != null) {
             library.returnBookFromUser(user, book);
-            Message.systemMessageWithColor(book.getTitle() + " has been returned.", "green");
+            Message.systemMessageWithColor(book.getTitle() + " has been returned.", "blue");
         } else {
             Message.systemMessageWithColor("Book " + tempTitle + " not found, no book returned.", "red");
         }

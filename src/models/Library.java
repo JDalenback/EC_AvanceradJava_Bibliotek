@@ -147,7 +147,7 @@ public class Library implements Serializable {
                             .get(j).getBookTracker().getDateOfReturn()), "yellow");
                 } else {
                     Message.messageWithColor(dayPattern.format(lentBooks.get(x).getMyBooks()
-                            .get(j).getBookTracker().getDateOfReturn()), "green");
+                            .get(j).getBookTracker().getDateOfReturn()), "blue");
                 }
             }
             if (x + 1 != lentBooks.size()) {
@@ -298,7 +298,7 @@ public class Library implements Serializable {
             Message.messageWithColor("Your loan period is almost over. " +
                     String.format("Please return the book at the latest %s.", dayPattern.format(returnDay)), "yellow");
         } else {
-            Message.messageWithColor(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "green");
+            Message.messageWithColor(String.format("Return the book latest %s.", dayPattern.format(returnDay)), "blue");
         }
     }
 
