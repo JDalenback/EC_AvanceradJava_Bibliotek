@@ -66,6 +66,24 @@ public class Library implements Serializable {
 
     }
 
+    public void printAllBooksInLibrary() {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+        for (int i = 0; i < getBooksInLibrary().size(); i++) {
+            System.out.print("\t\t" + (i + 1) + ".\t" + getBooksInLibrary().get(i).getTitle() + ", written by "
+                    + getBooksInLibrary().get(i).getAuthor() + ". ISBN: " + getBooksInLibrary().get(i).getIsbn());
+            if (getBooksInLibrary().get(i).getBookTracker().isAvailable())
+                Message.messageWithColor("\t- this book is available.", "blue");
+            else
+                Message.messageWithColor(" - date of return " + dayPattern.format(getBooksInLibrary().get(i).getBookTracker().getDateOfReturn()), "red");
+        }
+        System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
+
+
+    }
+
+
     public void sortByAuthor() {
         List<String> booksByAuthor = new ArrayList<>();
 
@@ -103,22 +121,69 @@ public class Library implements Serializable {
     }
 
     public void showAllLentBooksInLibrary() {
-        List<Book> lentBooks = booksInLibrary
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
+        long currentTime = System.currentTimeMillis();
+        List<User> usersAndLentBooks = users
                 .stream()
-                .filter(book -> !(book.getBookTracker().isAvailable()))
+                .filter(s -> s.getMyBooks().size() > 0)
+                .sorted((Comparator.comparing(User::getName)))
                 .collect(Collectors.toList());
 
-        Message.systemMessage(lentBooks);
+        System.out.println("\t\t----------------------------------------------------------" +
+                "------------------------------------------------------------");
+        for (int x = 0; x < usersAndLentBooks.size(); x++) {
+
+            usersAndLentBooks.get(x).getMyBooks().sort(Comparator.<Book>comparingLong(o1 -> o1.getBookTracker()
+                    .getDateOfReturn()).thenComparingLong(o2 -> o2.getBookTracker().getDateOfReturn()));
+
+            for (int j = 0; j < usersAndLentBooks.get(x).getMyBooks().size(); j++) {
+                System.out.print(("\t\tTitle: " + usersAndLentBooks.get(x).getMyBooks().get(j).getTitle() +
+                        ". Author: " + usersAndLentBooks.get(x).getMyBooks().get(j).getAuthor() +
+                        ". ISBN: " + usersAndLentBooks.get(x).getMyBooks().get(j).getIsbn() +
+                        " - Lender: " + usersAndLentBooks.get(x).getName() + ". Should be returned: "));
+                if (usersAndLentBooks.get(x).getMyBooks()
+                        .get(j).getBookTracker().getDateOfReturn() < currentTime) {
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "red");
+                } else if (usersAndLentBooks.get(x).getMyBooks()
+                        .get(j).getBookTracker().getDateOfReturn() - currentTime < 259200000) {
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "yellow");
+                } else {
+                    Message.messageWithColor(dayPattern.format(usersAndLentBooks.get(x).getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()), "green");
+                }
+            }
+            if (x + 1 != usersAndLentBooks.size()) {
+                System.out.println();
+            }
+        }
+        System.out.println("\t\t----------------------------------------------------------" +
+                "------------------------------------------------------------");
     }
 
     public void showAllLateBooks() {
+        DateFormat dayPattern = new SimpleDateFormat("yyyy-MM-dd");
         long currentTime = System.currentTimeMillis();
-        List<Book> lateBooks = booksInLibrary
+        List<User> lentBooks = users
                 .stream()
-                .filter(book -> book.getBookTracker().getDateOfReturn() > 0 && book.getBookTracker().getDateOfReturn() < currentTime)
+                .filter(s -> s.getMyBooks().size() > 0)
                 .collect(Collectors.toList());
 
-        Message.systemMessage(lateBooks);
+        List<String> lateBooksToBeShown = new ArrayList<>();
+        for (User lentBook : lentBooks) {
+            for (int j = 0; j < lentBook.getMyBooks().size(); j++) {
+                if (lentBook.getMyBooks().get(j).getBookTracker().getDateOfReturn() < currentTime) {
+                    lateBooksToBeShown.add("Title: " + lentBook.getMyBooks().get(j).getTitle() +
+                            ". Author: " + lentBook.getMyBooks().get(j).getAuthor() +
+                            ". ISBN: " + lentBook.getMyBooks().get(j).getIsbn() +
+                            " - Lender: " + lentBook.getName() +
+                            ". Should be returned: " + dayPattern.format(lentBook.getMyBooks()
+                            .get(j).getBookTracker().getDateOfReturn()));
+                }
+            }
+        }
+        Message.systemMessage(lateBooksToBeShown);
     }
 
 
@@ -210,7 +275,7 @@ public class Library implements Serializable {
         System.out.println("\nAdd new book.");
         bookTitle = getInputFromUser("Title: ");
         author = getInputFromUser("Author: ");
-        isbn =getInputFromUser("ISBN: ");
+        isbn = getInputFromUser("ISBN: ");
         description = getInputFromUser("Description: ");
 
         Book newBook = new Book(bookTitle, author, isbn, description);
@@ -364,6 +429,10 @@ public class Library implements Serializable {
             return (Library) object;
         } else
             return Library.getInstance();
+    }
+
+    public List<Book> getBooksInLibrary() {
+        return booksInLibrary;
     }
 
     public void populateMockupLibrary() {

@@ -75,6 +75,7 @@ public class Menu implements Serializable {
             System.out.println("9. See lender by name.");
             System.out.println("10. Add user to library");
             System.out.println("11. Remove user from library");
+            System.out.println("12. See all books in library");
             System.out.println("15. Logg out");
             chose = scanner.nextLine();
             switch (chose) {
@@ -124,6 +125,10 @@ public class Menu implements Serializable {
                     library.removeUser(library.getSpecificUser(userName));
                     library.createReadingPauseForUser();
                     break;
+                case "12":
+                    library.printAllBooksInLibrary();
+                    library.createReadingPauseForUser();
+                    break;
                 case "15":
                     isRunning = false;
                     break;
@@ -149,6 +154,7 @@ public class Menu implements Serializable {
             System.out.println("5. Search for book (Title or ISBN).");
             System.out.println("6. Search for books (Title, Author or ISBN).");
             System.out.println("7. Read more about a book.");
+            System.out.println("8. See all books in library.");
             System.out.println("9. Logg out");
 
             chose = scanner.nextLine();
@@ -206,6 +212,10 @@ public class Menu implements Serializable {
                     }
                     System.out.println("\t\t-----------------------------------------------------------------" +
                             "-----------------------------------------------------");
+                    library.createReadingPauseForUser();
+                    break;
+                case "8":
+                    library.printAllBooksInLibrary();
                     library.createReadingPauseForUser();
                     break;
                 case "9":
