@@ -9,6 +9,9 @@ public class Program implements Serializable {
 
     public void start() {
         //library.populateMockupLibrary();
+
+        //library.sortByTitle();
+
         menu.login();
     }
 }

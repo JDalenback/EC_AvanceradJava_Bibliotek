@@ -52,18 +52,43 @@ public class Library implements Serializable {
     }
 
     public void sortByTitle() {
-        List<String> booksByTitle = new ArrayList<>();
+//        List<String> booksByTitle = new ArrayList<>();
+//
+//        for (Object item : booksInLibrary) {
+//            String partString = item.toString().substring(7);
+//            booksByTitle.add(partString);
+//        }
+//
+//        Collections.sort(booksByTitle);
+//        for (String title : booksByTitle) {
+//            System.out.println("Title: " + title);
+//        }
 
-        for (Object item : booksInLibrary) {
-            String partString = item.toString().substring(7);
-            booksByTitle.add(partString);
-        }
+        booksInLibrary.sort(Comparator.comparing(Book::getTitle));
 
-        Collections.sort(booksByTitle);
-        for (String title : booksByTitle) {
-            System.out.println("Title: " + title);
-        }
+    }
 
+    public void sortByAuthor() {
+//        List<String> booksByAuthor = new ArrayList<>();
+//
+//        for (Object item : booksInLibrary) {
+//            String[] splitAuthor = item.toString().split("Author");
+//            String author = splitAuthor[1].substring(2);
+//
+//            String title = splitAuthor[0];
+//
+//            String[] authorRemoveIsbn = author.split("ISBN");
+//            String isbn = authorRemoveIsbn[1].substring(2);
+//
+//            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title + "ISBN: " + isbn);
+//        }
+//
+//        Collections.sort(booksByAuthor);
+//        for (String title : booksByAuthor) {
+//            System.out.println(title);
+//        }
+
+        booksInLibrary.sort(Comparator.comparing(Book::getAuthor));
     }
 
     public void printAllBooksInLibrary() {
@@ -80,29 +105,6 @@ public class Library implements Serializable {
         }
         System.out.println("\t\t----------------------------------------------------------------------------------------------------------------------");
 
-
-    }
-
-
-    public void sortByAuthor() {
-        List<String> booksByAuthor = new ArrayList<>();
-
-        for (Object item : booksInLibrary) {
-            String[] splitAuthor = item.toString().split("Author");
-            String author = splitAuthor[1].substring(2);
-
-            String title = splitAuthor[0];
-
-            String[] authorRemoveIsbn = author.split("ISBN");
-            String isbn = authorRemoveIsbn[1].substring(2);
-
-            booksByAuthor.add("Author: " + authorRemoveIsbn[0] + "" + title + "ISBN: " + isbn);
-        }
-
-        Collections.sort(booksByAuthor);
-        for (String title : booksByAuthor) {
-            System.out.println(title);
-        }
 
     }
 
@@ -316,18 +318,24 @@ public class Library implements Serializable {
     }
 
     public void addUser() {
-        String name;
+        String name = "";
         String userID;
         String admin;
         boolean adminBoolean = false;
         boolean userAdd = false;
         while (!userAdd) {
 
-            name = getInputFromUser("---Create a new USER---\n\nName: ");
-            System.out.print("Your UserID must be at least 8 character long.\n" +
-                    "Containing at lest one special character @$!%*?&, one uppercase, " +
-                    "one lowercase and one number 0-9.\n");
+            Message.messageWithColor("---Create a new USER---\n\n", "default");
+            while (name.equals("")) {
+                name = getInputFromUser("Name: ");
+                name = name.trim();
+                if (name.equals(""))
+                    Message.messageWithColor("You need to enter a name.", "red");
+            }
 
+            Message.messageWithColor("Your UserID must be at least 8 character long.\n" +
+                    "Containing at lest one special character @$!%*?&, one uppercase, " +
+                    "one lowercase and one number 0-9.\n", "default");
             userID = makeValidUserID();
             admin = getInputFromUser("Admin? Enter \"yes\" or \"no\"");
 
@@ -345,7 +353,6 @@ public class Library implements Serializable {
                 Message.messageWithColor("Username already exists. You have to choose another", "red");
             }
         }
-
     }
 
     public boolean checkIfUserNameExists(String name) {
